@@ -169,7 +169,7 @@
 
 
 \begin{frame}{Owicki-Gries approach}
-  $$\frac{\{P_1\}~C_1~\{Q_1\}~~~\{P_2\}~C_2~\{Q_2\}}{\{P_1 \land P_2\} C_1~||~C_2~\{Q_1 \land Q_1\}}$$
+  $$\frac{\{P_1\}~C_1~\{Q_1\}~~~\{P_2\}~C_2~\{Q_2\}}{\{P_1 \land P_2\} C_1~||~C_2~\{Q_1 \land Q_2\}}$$
   if the proofs $\{P_1\}~C_1~\{Q_1\}$ and $\{P_2\}~C_2~\{Q_2\}$ are {\bf interference free}.
   \pause
 
@@ -194,14 +194,14 @@ Need to prove:
 %Rely Guarantee
 \begin{frame}{Rely Guarantee Reasoning (P,R,G,Q)}
   \begin{itemize}
-  \item Precondition Q and Postcondition Q.
+  \item Precondition P and Postcondition Q.
   \item The rely condition R models all the atomic actions of the environment,
     describing the interference the  program can tolerate from its environment.
   \item The guarantee condition G models the atomic actions of the program, and
     hence decribing the interference that it imposes on the other threads of the system.
   \end{itemize}
   \pause
-  $$\frac{C_1 \models (p_1, R_1,G_1,q_1)~~~~~~ C_2 \models (p_2, R_2, G_2, p_2)}{C_1~||~C_2 \models (p_1 \land
+  $$\frac{C_1 \models (p_1, R_1,G_1,q_1)~~~~~~ C_2 \models (p_2, R_2, G_2, q_2)}{C_1~||~C_2 \models (p_1 \land
     p_2, R_1 \land R_2, G_1 \lor G_2, q_1 \land q_2)}$$
 \end{frame}
 
@@ -230,10 +230,10 @@ Need to prove:
 %% Remark: R and G are quite complicated, how marriage of RG and CSL resolve it?
 %% Dont' scare to make a question
 
-\begin{frame}{Concurrent Separation Logic}
+\begin{frame}{Concurrent Separation Logic - CSL}
   \begin{itemize}
   \item Interfence-free concurrency
-    $$\frac{\{P_1\}~C_1~\{Q_1\}}{\{P_1 \ast P_2\}~C_1~||~C_2 ~\{Q_1 \ast Q_2
+    $$\frac{\{P_1\}~C_1~\{Q_1\}~~~\{P_2\}~C_2~\{Q_2\}}{\{P_1 \ast P_2\}~C_1~||~C_2 ~\{Q_1 \ast Q_2
     \}}$$
     \pause
   \item A resource invariant $RI_r$ is associated with each resource. Acquiring

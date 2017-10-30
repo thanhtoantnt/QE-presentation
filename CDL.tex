@@ -1,5 +1,5 @@
 %concurrent abstract predicates for CDL
-\begin{frame}{Resource predicates}
+\begin{frame}{Resource Predicates}
 \[
 \begin{array}{l}
 \code{\CDL~\createlatch(n)~with~P}\\
@@ -32,7 +32,7 @@
 \]
 \end{frame}
 
-\begin{frame}{Normalization rules}
+\begin{frame}{Normalization Rules}
 \begin{center}
 \begin{small}
 \[
@@ -73,7 +73,7 @@
 \end{frame}
 
 % Race error
-\begin{frame}[shrink=17]{Race Error Case}
+\begin{frame}[shrink=17]{Race Error}
   \BSPEC{\errrulen{1}:
     \LatchIn{c}{P}{\sep}\code{CNT(c,-1)}
     \sm{\longrightarrow} \RACE}  
@@ -177,7 +177,7 @@ $
 \DEC: \begin{array}[t]{ll}
 \GLOBAL{i}{n}\,{\wedge}\,\code{n{>}0} & \rightsquigarrow \GLOBAL{i}{n{-}1}
 \end{array} \\
-\end{array}
+\end{array}\\
 $
 \end{small}
 \pause
@@ -186,7 +186,7 @@ $
 $
 \LOCAL{i}{n} \longrightarrow \GLOBALF{i}{m}{\code{m}{\geq}\code{n}{\geq}\code{0}}
 $
-\end{small}
+\end{small} \\
 \begin{small}
 $
 \LOCAL{i}{n}{\wedge}\code{a,b}{\geq}\code{0}{\wedge}{\code{n=a+b}}
