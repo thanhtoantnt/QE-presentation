@@ -1,0 +1,85 @@
+\begin{figure}
+\savespace
+\savespace
+\savespace
+\savespace
+\begin{center}
+\begin{frameit}
+\savespace
+\savespace
+\savespace
+\begin{small}
+\[
+\begin{array}{cll}%{rcll}
+ \nonterm{Prog} & ::= & \overbar{\nonterm{datat}} ~~ 
+\overbar{\nonterm{proc}} \\
+
+\nonterm{datat} & ::= & {\bf data}~ \code{C} ~\{~
+\overline{\nonterm{t}~\term{f}} ~\}   \\
+\nonterm{proc} & ::= & \nonterm{t} ~ 	
+\term{pn}(\overline{\nonterm{t}~\term{v}}) ~~ \overbar{\nonterm{spec}}
+~\{~\nonterm{e}~\}   \\ 
+		
+%\textsf{Pre/Post-conditions} &  
+ \nonterm{spec} & ::= & \lit{\requires} ~\pre ~\lit{\ensures}~
+\post\lit{;}  \\
+
+%% \nonterm{param} & ::= & \nonterm{type}~\term{v}  \\
+%% \mid \lit{ref}~\nonterm{type}~\term{v} & \textsf{Parameter}\\
+
+% \textsf{Type} & 
+ \nonterm{t} & ::= &\btt{void} \mid \btt{int} \mid \btt{bool} \mid \hide{\btt{thrd}}\hide{ \btt{lock} \mid} \btt{\CDL} \mid \code{C} \\
+
+%\textsf{Expression} & 
+\nonterm{e} & ::= & %% \code{null} \mid 
+\nonterm{v} \mid \nonterm{v.f} \mid \term{k}  \mid \lit{\code{new}}~\code{C}\lit{(} \overline{\term{v}} \lit{)} \hide{\mid \lit{\code{destroy}}\lit{(} \term{v} \lit{)}}
+\mid e_1;e_2 \mid e_1 \| e_2  \mid \criticalSec{e} \quad  \\ 
+%&  
+& & \lit{\createlatch} \lit{(} \nonterm{n} \lit{)} ~ \lit{\code{with}}~ {\heap{\wedge}\pure}  \mid \lit{\code{countDown}} \lit{(}\nonterm{v} \lit{)}
+        \mid   \\ 
+%& 
+& & \lit{\code{await}} \lit{(} \term{v} \lit{)} \mid   \nonterm{pn} \lit{(} \overline{\term{v}} \lit{)}  \mid \code{if} ~ \nonterm{v}~\code{then}~\nonterm{e}_1 ~\code{else}~ \nonterm{e}_2 \mid   \ldots \\ 
+
+
+\hide{ & &  \lit{\code{create\_thread}} \lit{(} \nonterm{pn} \lit{)} \mid \lit{\code{fork}} \lit{(}\nonterm{v}, \overline{\nonterm{v}} \lit{)}
+        \mid \lit{\code{join}} \lit{(} \term{v} \lit{)} \mid & \\ }
+
+\hide{ & &  \lit{\code{create\_lock}} \lit{(}  \lit{)}~\code{with}~\constr \mid \lit{\code{acquire}} \lit{(}\term{l} \lit{)}
+        \mid \lit{\code{release}} \lit{(} \term{l} \lit{)}   \mid   \lit{\code{dispose}} \lit{(} \term{l} \lit{)} & \\}
+
+         %% &&\scnay{Do we need the above lock ops? R they sufficient?} &
+	%% \begin{array}{ll}
+	
+	%% & \hspace{-2.3mm} 
+
+        %% \mid & 
+        %% \mid &\!\!\! 
+
+        %% \mid &\!\!\! 
+
+        %% %% \mid &\!\!\!\lit{new}~\term{CountDownLatch}\lit{(} \term{v} \lit{)}
+	%% %% \mid \ldots ~~~\\
+			
+	%% \end{array} \\ %& \textsf{Statement}		
+
+\end{array}
+\]
+\end{small}
+\savespace
+%\savespace
+\end{frameit}
+\savespace
+\savesmallspace
+%% \nocaptionrule
+\caption{Core Language with \hide{Threads and }{\CDL}\hide{ and Locks}}
+\label{fig:proglang}
+%\end{minipage}
+\savespace%\savespace
+\savespace
+\savespace%\savespace
+\savespace
+\end{center}
+\end{figure}
+
+\wnnay{I think comments of Fig 1 
+should be in LHS similar to Fig 2 for logic}

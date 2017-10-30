@@ -1,0 +1,214 @@
+%concurrent abstract predicates for CDL
+\begin{frame}{Resource predicates}
+\[
+\begin{array}{l}
+\code{\CDL~\createlatch(n)~with~P}\\
+\SPEC{~~~~\requires~\code{n\sm{\gt}0}} \\
+\SPEC{~~~~\ensures~ \LatchIn{res}{P} {\sep}\LatchOut{res}{P}{\sep}\code{CNT(res,n)}}; \\
+\SPEC{~~~~\requires~\code{n\sm{=}0}} \\
+\SPEC{~~~~\ensures~ \code{CNT(res,-1)}}; \\
+\end{array}
+\]
+\end{frame}
+
+\begin{frame}{Resource Predicates}
+\[
+\begin{array}{l}
+\code{void~countDown(\CDL~i)}\\
+~~
+\SPEC{\requires~\LatchIn{i}{P}{\sep}\code{P}{\sep}\code{CNT(i,n)}\sm{\wedge}\code{n{>}0}}\\ 
+~~ \SPEC{\ensures~ \code{CNT(i,n{-}1)}};\\ 
+~~
+\SPEC{\requires~\code{CNT(i,-1)}}\\
+~~ \SPEC{\ensures~ \code{CNT(i,-1)}};\\
+\\
+\\
+\code{void~await(\CDL~i)}\\
+~~ \SPEC{\requires~\LatchOut{i}{P}{\sep}\code{CNT(i,0)}}\\
+~~ \SPEC{\ensures~ \code{P}{\sep}\code{CNT(i,-1)}};\\
+~~ \SPEC{\requires~\code{CNT(i,-1)}}\\
+~~ \SPEC{\ensures~ \code{CNT(i,-1)}};%\\
+\end{array}
+\]
+\end{frame}
+
+\begin{frame}{Normalization rules}
+\begin{center}
+\begin{small}
+\[
+\begin{array}{l}
+\BSPEC{\normrulen{1}:
+
+\CNT{c}{n} {\sep} \CNT{c}{-1} {\wedge} \code{n\sm{\leq}0} {\longrightarrow} \CNT{c}{-1}}
+\\
+\BSPEC{\normrulen{2}:
+\CNT{c}{n1} {\sep} \CNT{c}{n2}\, {\wedge}\, \code{n}{=}\code{n1{+}n2} \,{\wedge}\, \code{n1,n2}{\geq}\code{0} 
+{\longrightarrow} \CNT{c}{n}}
+\\
+\BSPEC{\normrulen{3}:
+\LatchOut{c}{P} {\sep} \CNT{c}{-1}  {\longrightarrow} \CNT{c}{-1}{\sep}\code{P}}
+\end{array}
+\]
+\end{small}
+\end{center}
+\pause
+%%%%%%%%%%%%%%%%%%% Other rules
+\begin{small}
+\[
+\begin{array}{l}
+\BSPEC{\splitrulen{1}:
+\LatchOut{i}{P{\sep}Q} \,{\longrightarrow}\, \LatchOut{i}{P} {\sep}\LatchOut{i}{Q}}
+\\
+\BSPEC{\splitrulen{2}:
+\LatchIn{i}{P{\sep}Q} \,{\longrightarrow}\, \LatchIn{i}{P} {\sep}\LatchIn{i}{Q}}
+\\
+\BSPEC{\splitrulen{3}:
+\CNT{c}{n} \,{\wedge}\, %% \code{n1}{\geq}\code{{-}1}  \,{\wedge}\,
+\code{n1,n2}{\geq}\code{0}  \, {\wedge}\, \code{n}{=}\code{n1{+}n2} 
+\,{\longrightarrow}\,
+\CNT{c}{n1} {\sep} \CNT{c}{n2} }
+\end{array}
+\]
+\end{small}
+\end{frame}
+
+% Race error
+\begin{frame}[shrink=17]{Race Error Case}
+  \BSPEC{\errrulen{1}:
+    \LatchIn{c}{P}{\sep}\code{CNT(c,-1)}
+    \sm{\longrightarrow} \RACE}  
+\pause
+    \input{race-error}
+\end{frame}
+
+% Deadlock
+\begin{frame}{Deadlock}
+  \BSPEC{\errrulen{2}: 
+\code{CNT(c,a)}{\sep}\code{CNT(c,-1)}\sm{\wedge}\code{a{>}0} 
+\sm{\longrightarrow} \DEADLOCK}
+\pause
+\begin{center}
+\begin{small}
+\code{c = \createlatch(2);}
+\\
+\code{\CSPEC{CNT(c,2) {\LRA} CNT(c,2){\sep}CNT(c,0)}}\\
+\[
+{
+\left(
+\begin{tabular}{ l@{\extracolsep{\fill}}  || l@{\extracolsep{\fill}} }
+\code{\CSPEC{CNT(c,2)}} &~~\code{\CSPEC{CNT(c,0)}}\\
+\code{countDown(c);~~} &~~\code{await(c);}\\
+\code{\CSPEC{CNT(c,1)}} &~~\code{\CSPEC{CNT(c,-1)}}\\
+\end{tabular}\right)\code{;}
+}
+\]
+
+\code{\CSPEC{CNT(c,1){\sep}CNT(c,-1)}}% \sm{\longrightarrow} \DEADLOCK}}
+\\
+\code{\CSPEC{{\color{red}{\DEADLOCK} detected by \errrulen{2}}}}
+\end{small}
+\end{center}
+\end{frame}
+
+\begin{frame}{Inter-latch Deadlock}
+  \BSPEC{\waitrulen{1}:
+  \WAITC{\code{S}}\sm{{\wedge}\neg}\code{isCyclic(S)}\sm{\longrightarrow}
+  \WAITC{\{\}} } \\
+  \BSPEC{\waitrulen{2}: 
+  \code{CNT($c_1$,a)} {\sep}\code{CNT($c_2$,-1)} {\sep} \WAITC{\code{S}} $\land$
+  \code{a{>}0} $\longrightarrow$ } \\
+  \BSPEC{\text{\ \ \ \ \ \ \ \ \ \ \ \ \ }\code{CNT($c_1$,a)}{\sep}\code{CNT($c_2$,-1)}\sm{\wedge}\code{a{>}0}
+    {\sep} \WAITC{\code{S}{\cup}\code{\{$c_2${\ra}$c_1$\}}}}\\
+  \BSPEC{\waitrulen{3}: \WAITC{\code{$S_1$}} {\sep} \WAITC{\code{$S_2$}}
+    \sm{\longleftrightarrow} \WAITC{(\code{$S_1 \cup S_2$}) } } \\
+  \BSPEC{\errrulen{3}: \WAITC{\code{S}} \code{\sm{\wedge}~isCyclic(S)} \sm{\longrightarrow} \DEADLOCK }
+
+\end{frame}
+
+\begin{frame}{Inter-latch Deadlock}
+  %% \begin{center}
+  %%   \code{c1 = \createlatch(1); c2 = \createlatch(1);}
+  %%   \code{\CSPEC{\addperm{\WAIT{}}{1}{\sep}CNT(c1,1) {\sep} CNT(c2,1)  {\LRA}}}
+  %%   \end{center}
+\begin{small}
+\begin{center}
+\code{c1 = \createlatch(1); c2 = \createlatch(1);}\\
+\CSPEC{WAIT\{\} $\ast$ CNT(c1,1) $\ast$ CNT(c2,1)
+  $\Longrightarrow$ }  \\
+\CSPEC{CNT(c1,1) {\sep} CNT(c2,0) {\sep} CNT(c2,1) {\sep} CNT(c1,0) }\\
+\[
+{
+\left(
+\begin{tabular}{ l@{\extracolsep{\fill}}  || l@{\extracolsep{\fill}} }
+\CSPEC{CNT(c1,1){\sep}CNT(c2,0)} &~~\CSPEC{CNT(c2,1){\sep}CNT(c1,0)}\\
+\code{await(c2);~~} &~~\code{await(c1);}\\
+\CSPEC{CNT(c1,1){\sep}CNT(c2,-1)} &~~\CSPEC{CNT(c2,1){\sep}CNT(c1,-1)}\\
+\CSPEC{$\ast$ WAIT(\{c2 $\rightarrow$ c1\})} &~~ \CSPEC{$\ast$ WAIT(\{c1 $\rightarrow$ c2\})}\\
+\code{countDown(c1);~~} &~~\code{countDown(c2);}\\
+\CSPEC{CNT(c1,0){\sep}CNT(c2,-1)} &~~\CSPEC{CNT(c2,0){\sep}CNT(c1,-1)}\\
+\CSPEC{$\ast$ WAIT(\{c2 $\rightarrow$ c1\})} &~~ \CSPEC{$\ast$ WAIT(\{c1 $\rightarrow$ c2\})}\\
+\end{tabular}\right)%\code{;}
+}
+\]
+
+\CSPEC{\quad CNT(c1,-1){\sep}CNT(c2,-1) {\sep} WAIT(\{c2 $\rightarrow$ c1, c1
+  $\rightarrow$ c2\})} \\ 
+\code{\CSPEC{{\color{red}{\DEADLOCK} detected by \errrulen{3} }}}
+
+\end{center}
+\end{small}
+\end{frame}
+
+
+\begin{frame}{Interpretations for Abstract Predicates}
+\begin{small}
+$
+\begin{array}{lll}
+\vspace{2mm}
+ \LatchOut{i}{P} & \defs & \GLOBAL{i}{0} {\ourimply} \code{P}
+\\
+ \LatchIn{i}{P} &\defs &  (\code{P}{\septract}\emp) ~{\sep}~ [\DEC]  {\sep}\GLOBAL{i}{m} {\wedge}\code{m>0} 
+ \\
+
+\end{array}
+$
+$
+\begin{array}{l}
+\DEC: \begin{array}[t]{ll}
+\GLOBAL{i}{n}\,{\wedge}\,\code{n{>}0} & \rightsquigarrow \GLOBAL{i}{n{-}1}
+\end{array} \\
+\end{array}
+$
+\end{small}
+\pause
+\vspace{2mm}
+\begin{small}
+$
+\LOCAL{i}{n} \longrightarrow \GLOBALF{i}{m}{\code{m}{\geq}\code{n}{\geq}\code{0}}
+$
+\end{small}
+\begin{small}
+$
+\LOCAL{i}{n}{\wedge}\code{a,b}{\geq}\code{0}{\wedge}{\code{n=a+b}}
+~{\longleftrightarrow}~ \LOCAL{i}{a}{\sep}\LOCAL{i}{b} 
+$
+\end{small} 
+\begin{small}
+$
+\GLOBAL{i}{a}{\sep}\GLOBAL{i}{b} 
+~{\longleftrightarrow}~\GLOBAL{i}{a}{\wedge}\code{a{=}b}
+$
+\end{small}
+\pause
+\vspace{3mm}
+\begin{small}
+$
+\begin{array}{lll}
+\CNT{i}{n} &\defs & \LOCAL{i}{n} {\wedge}\code{n${\geq}$0}
+~{\vee}~ \GLOBAL{i}{0}{\wedge}\code{n=-1} 
+% CNT(i,n) = {|i->n|}&n>0 \/ [i->0] & n=-1
+\end{array}
+$
+\end{small}
+
+\end{frame}

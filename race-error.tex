@@ -1,0 +1,37 @@
+%% \begin{figure}
+\begin{center}
+  \begin{small}
+\code{c = \createlatch(1)~with~\SPEC{P{\sep}Q};} \\
+\code{\CSPEC{\LatchOut{c}{P{\sep}Q}{\sep}\LatchIn{c}{P{\sep}Q}{\sep}\CNT{c}{1}}} \\
+\code{\CSPEC{\LatchOut{c}{P{\sep}Q}{\sep}\LatchIn{c}{P}{\sep}\LatchIn{c}{Q}{\sep}\CNT{c}{0}{\sep}\CNT{c}{1}{\sep}\CNT{c}{0}}}
+\\\vspace{-12pt}
+\[
+\left(
+\begin{tabular}{ 
+  l@{\extracolsep{\fill}} || 
+  l@{\extracolsep{\fill}} || 
+  l@{\extracolsep{\fill}} }
+\code{\dotonly{}} & \code{\dotsaying{create P}} & \code{\dotsaying{create Q}} \\
+\!\!\code{\CSPEC{\!\!\LatchOut{c}{P{\sep}Q}{\sep}\CNT{c}{0}}}
+&\code{\CSPEC{\!\!P{\sep}\LatchIn{c}{P}{\sep}\CNT{c}{1}}} 
+& \code{\CSPEC{\!\!Q{\sep}\LatchIn{c}{Q}{\sep}\CNT{c}{0}}} \\
+\code{await(c);} & \code{countDown(c);} & \code{skip();}\\
+\!\!\code{\CSPEC{\!\!{P{\sep}Q{\sep}\CNT{c}{-1}}}}
+& \code{\CSPEC{\!\!\CNT{c}{0}}} 
+& \code{\CSPEC{\!\!Q{\sep}\LatchIn{c}{Q}{\sep}\CNT{c}{0}}} \\
+\code{\dotsaying{use P*Q}} & \code{\dotonly{}} & \code{\dotonly{}} \\
+\end{tabular}\!\!\right)%\!\!\code{;}
+\]
+
+\code{\CSPEC{{P{\sep}Q{\sep}\CNT{c}{-1}}
+ \sep \CNT{c}{0} 
+ \sep Q{\sep}\LatchIn{c}{Q}{\sep}\CNT{c}{0}}} \\
+\code{\CSPEC{{P{\sep}Q{\sep}\CNT{c}{-1}}
+ \sep Q{\sep}\LatchIn{c}{Q}}} \\
+\code{\CSPEC{{\color{red} RACE-ERROR detected
+by \errrulen{1} }}} 
+
+\end{small}
+\end{center}
+%% \caption{A {\CDL} with a race error}\label{figure.cdl.1}
+%% \end{figure}

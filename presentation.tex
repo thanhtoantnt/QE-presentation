@@ -1,0 +1,360 @@
+%\documentclass[handout]{beamer}
+\documentclass[11pt]{beamer}
+
+\mode<presentation>
+{
+	\usetheme{default}
+  \usecolortheme{seahorse}
+  \usefonttheme{default}
+	\setbeamertemplate{navigation symbols}{}
+	\setbeamertemplate{caption}[numbered]
+} 
+\setbeamersize{text margin left=0.5cm,text margin right=0.5cm}
+
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{cspsymb}
+\usetikzlibrary{arrows,positioning,automata} 
+\usepackage{appendixnumberbeamer}
+\newcommand\todo[1]{\textcolor{red}{[#1]}}
+\usepackage{pgfpages}
+\newcommand*{\Scale}[2][4]{\scalebox{#1}{$#2$}} 
+\usepackage{handoutWithNotes} 
+\mode<handout>
+{
+  \usepackage{pgf}
+  \usepackage{pgfpages}
+
+\pgfpagesdeclarelayout{4 on 1 boxed}
+{
+  \edef\pgfpageoptionheight{\the\paperheight} 
+  \edef\pgfpageoptionwidth{\the\paperwidth}
+  \edef\pgfpageoptionborder{0pt}
+}
+{
+  \pgfpagesphysicalpageoptions
+  {%
+    logical pages=4,%
+    physical height=\pgfpageoptionheight,%
+    physical width=\pgfpageoptionwidth%
+  }
+  \pgfpageslogicalpageoptions{1}
+  {%
+    border code=\pgfsetlinewidth{2pt}\pgfstroke,%
+    border shrink=\pgfpageoptionborder,%
+    resized width=.5\pgfphysicalwidth,%
+    resized height=.5\pgfphysicalheight,%
+    center=\pgfpoint{.25\pgfphysicalwidth}{.75\pgfphysicalheight}%
+  }%
+  \pgfpageslogicalpageoptions{2}
+  {%
+    border code=\pgfsetlinewidth{2pt}\pgfstroke,%
+    border shrink=\pgfpageoptionborder,%
+    resized width=.5\pgfphysicalwidth,%
+    resized height=.5\pgfphysicalheight,%
+    center=\pgfpoint{.75\pgfphysicalwidth}{.75\pgfphysicalheight}%
+  }%
+  \pgfpageslogicalpageoptions{3}
+  {%
+    border code=\pgfsetlinewidth{2pt}\pgfstroke,%
+    border shrink=\pgfpageoptionborder,%
+    resized width=.5\pgfphysicalwidth,%
+    resized height=.5\pgfphysicalheight,%
+    center=\pgfpoint{.25\pgfphysicalwidth}{.25\pgfphysicalheight}%
+  }%
+  \pgfpageslogicalpageoptions{4}
+  {%
+    border code=\pgfsetlinewidth{2pt}\pgfstroke,%
+    border shrink=\pgfpageoptionborder,%
+    resized width=.5\pgfphysicalwidth,%
+    resized height=.5\pgfphysicalheight,%
+    center=\pgfpoint{.75\pgfphysicalwidth}{.25\pgfphysicalheight}%
+  }%
+}
+  \pgfpagesuselayout{4 on 1 boxed}[a4paper, border shrink=5mm, landscape]
+  \nofiles
+}
+
+\tikzset{
+	%Define standard arrow tip
+	>=stealth',
+	%Define style for boxes
+	punkt/.style={
+		rectangle,
+		rounded corners,
+		draw=black, very thick,
+		text width=12em,
+		text height=-1em,
+		text centered},
+	small/.style={
+		rectangle,
+		rounded corners,
+		draw=black, very thick,
+		text width=5em,
+		text height=0.75em,
+		text centered},
+	big/.style={
+		rectangle,
+		rounded corners,
+		draw=black, very thick,
+		text width=7em,
+		text height=0.5em,
+		text centered},
+	% Define arrow style
+	pil/.style={
+		->,
+		thick,
+		shorten <=2pt,
+		shorten >=2pt,},
+	line/.style={
+			-,
+			thick,
+			shorten <=2pt,
+			shorten >=2pt,}
+}
+
+\setbeamertemplate{footline}[text line]{%
+	\hspace{49.5em} \tiny
+	\centering \raggedleft\insertframenumber/ \inserttotalframenumber
+}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{smartdiagram}
+\newcommand\Fontvi{\fontsize{6}{7.2}\selectfont}
+
+\input{macros.tex}
+
+\title[QE Presentation]{\normalsize Automated Verification of Concurrent
+  Programs\\ CountDownLatch Mechanism Case Study} 
+\author[Nguyen Thanh Toan]{Student: Nguyen Thanh Toan - A0154686R\newline Supervisor: Assoc. Prof. Chin Wei Ngan}
+\institute[]{National University of Singapore}
+\date{November 3, 2017}
+
+\newcommand\orange[1]{\textcolor{orange}{\textbf{#1}}}
+\newcommand\reff[1]{[{#1}]}
+\newcommand\imply{{$\color{blue}\Rightarrow$ }}
+\newcounter{sauvegardeenumi}
+\newcommand{\asuivre}{\setcounter{sauvegardeenumi}{\theenumi}}
+\newcommand{\suite}{\setcounter{enumi}{\thesauvegardeenumi}}
+
+
+\begin{document}
+\begin{frame}[plain,noframenumbering]
+  \titlepage
+\end{frame}
+
+\begin{frame}{Everything is multi-core}
+	\begin{columns}[t]
+		\column{.3\textwidth}
+		\centering
+		\includegraphics[width=10em,height=7em]{./images/iphone.jpg}\\
+		\includegraphics[width=10em,height=7em]{./images/lg-gram.jpg}\\
+		\column{.3\textwidth}
+		\centering
+		\includegraphics[width=10em,height=7em]{./images/desktop.jpg}\\
+		\includegraphics[width=10em,height=7em]{./images/watch.jpg}
+	\end{columns}
+\end{frame}
+
+%CSL
+\begin{frame}{}
+  \begin{center}
+    \orange{How to reason about concurrent programs?}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}{Owicki-Gries approach}
+  $$\frac{\{P_1\}~C_1~\{Q_1\}~~~\{P_2\}~C_2~\{Q_2\}}{\{P_1 \land P_2\} C_1~||~C_2~\{Q_1 \land Q_1\}}$$
+  if the proofs $\{P_1\}~C_1~\{Q_1\}$ and $\{P_2\}~C_2~\{Q_2\}$ are {\bf interference free}.
+  \pause
+
+  Example:
+  \begin{itemize}
+  \item Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$
+    \pause
+    \item $P_1:  (x = 0 \lor x = 2)$ and $Q_1: (x = 1 \lor x = 3)$
+    \item $P_2: (x = 0 \lor x = 1)$ and $Q_2: (x = 2 \lor x = 3)$
+    \end{itemize}
+\pause
+Need to prove:
+\begin{itemize}
+\item $\{P_1\}~ x := x + 1~ \{Q_1\}$
+\item $\{P_2\}~ x := x + 2 ~\{Q_2\}$
+  \pause
+\item $\{P_1 \land P_2\}~ x := x + 2 ~\{P_1\} $ and $\{P_2 \land P_1\} ~x := x + 1 ~\{P_2\} $
+  \item $\{Q_1 \land P_2\}~ x := x + 2 ~\{Q_1\} $ and  $\{Q_2 \land P_1\}~ x := x + 1 ~\{Q_2\} $
+\end{itemize}
+\end{frame}
+
+%Rely Guarantee
+\begin{frame}{Rely Guarantee Reasoning (P,R,G,Q)}
+  \begin{itemize}
+  \item Precondition Q and Postcondition Q.
+  \item The rely condition R models all the atomic actions of the environment,
+    describing the interference the  program can tolerate from its environment.
+  \item The guarantee condition G models the atomic actions of the program, and
+    hence decribing the interference that it imposes on the other threads of the system.
+  \end{itemize}
+  \pause
+  $$\frac{C_1 \models (p_1, R_1,G_1,q_1)~~~~~~ C_2 \models (p_2, R_2, G_2, p_2)}{C_1~||~C_2 \models (p_1 \land
+    p_2, R_1 \land R_2, G_1 \lor G_2, q_1 \land q_2)}$$
+\end{frame}
+
+\begin{frame}{Rely Guarantee Example}
+ Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$ \\
+    \pause
+  \begin{equation}
+    \begin{split}
+      x := x + 1 ~\models &~(x = 0 \lor x = 2, \\
+      &(x = 0 \land x' = 2) \lor (x = 1 \land x' = 3), \\
+      &(x = 0 \land x'=1) \lor (x=2 \land x' = 3), \\
+      &(x = 0 \land x' = 1) \lor (x = 2 \land x' = 3)) \nonumber
+  \end{split}
+  \end{equation}
+  \pause
+  \begin{equation}
+    \begin{split}
+      x := x + 2 ~\models &~(x = 0 \lor x = 1, \\
+      &(x = 0 \land x' = 1) \lor (x = 2 \land x' = 3), \\
+      &(x = 0 \land x'= 2) \lor (x=1 \land x' = 3), \\
+      &(x = 0 \land x' = 2) \lor (x = 1 \land x' = 3)) \nonumber
+  \end{split}
+  \end{equation}
+\end{frame}
+
+%% Remark: R and G are quite complicated, how marriage of RG and CSL resolve it?
+%% Dont' scare to make a question
+
+\begin{frame}{Concurrent Separation Logic}
+  \begin{itemize}
+  \item Interfence-free concurrency
+    $$\frac{\{P_1\}~C_1~\{Q_1\}}{\{P_1 \ast P_2\}~C_1~||~C_2 ~\{Q_1 \ast Q_2
+    \}}$$
+    \pause
+  \item A resource invariant $RI_r$ is associated with each resource. Acquiring
+    the resource imports the resource invariant in the local scope.
+    $$\frac{\{(P \ast RI_r) \land S\}~C~\{Q \ast RI_r\}}{\{P\}~with~r~when~S~do~C~\{Q\}}$$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{CSL tree}
+  \begin{figure}
+  	\includegraphics[width=20em,height=14em]{./images/CSL-Family-Tree.pdf}
+  \end{figure}
+\end{frame}
+  %% \begin{frame}{How to reason about concurrent programs?}
+%%   \begin{itemize}
+
+%%   \item A new breakthough: Concurrent separation logic
+%%   \item Built on the success of Sequential Separation Logic
+%%   \item Godel Award 2016
+
+%%   \end{itemize}
+%% \end{frame}
+% First example
+\begin{frame}{Automated tools for CSL?}
+  \begin{itemize}
+  \item Great successes of sequential separation logic tools, e.g. Infer
+  \item Only 2 CSL tools appear \textit{this year}, Caper and Starling.
+    \pause
+  \item Our contributions:
+    \begin{itemize}
+    \item The first formal verification for {\CDL} by using abstract predicates.
+    \item A modular solution to the counter mechanism by combining a
+      \textit{thread-local} abstraction and the \textit{global} view.
+    \item Ensure race-freedom and deadlock-freedom.
+    \item An automated prototype which can verify a library implemenation of {\CDL}.
+    \end{itemize}
+  \end{itemize}
+ \end{frame}
+
+\begin{frame}{Motivation Example}
+\input{motiv.fig}
+\end{frame}
+
+% Second example
+\begin{frame}{Motivation Example}
+\begin{center}
+\code{c = \createlatch(1);}
+\[
+{
+\left(
+\begin{tabular}{ l@{\extracolsep{\fill}} || 
+                 l@{\extracolsep{\fill}} || 
+                 l@{\extracolsep{\fill}} }
+\BCOMMENT{\SPEC{send P*Q}} ~&~ \code{await(c);} ~&~ \code{await(c);}\\
+\code{countDown(c);} ~&~ \BCOMMENT{\SPEC{receive P}} ~&~ \BCOMMENT{\SPEC{receive Q}}\\
+\code{\ldots} ~&~ \code{\ldots} ~&~ \code{\ldots}\\
+\end{tabular}\right)
+}
+\]
+\end{center}
+%% \end{frame}
+
+%% %Third example
+%% \begin{frame}{Motivation Example}
+
+\pause
+
+  \begin{center}
+\code{c = \createlatch(2);}
+\[
+{
+\left(
+\begin{tabular}{ l@{\extracolsep{\fill}}  || l@{\extracolsep{\fill}} }
+\code{\ldots} ~&~\code{\ldots}\\
+\BCOMMENT{\SPEC{owns P}} ~&~ \BCOMMENT{\SPEC{owns Q}}\\
+\code{countDown(c);~await(c);} ~&~\code{countDown(c);~await(c);}\\
+\BCOMMENT{\SPEC{owns Q}} ~&~ \BCOMMENT{\SPEC{owns P}}\\
+\code{\ldots} ~&~\code{\ldots}\\
+\end{tabular}\right)
+}
+\]
+\end{center}
+\end{frame}
+
+\input{CDL}
+
+\input{formalism}
+
+\section{Automated Tool}
+\begin{frame}{Implementation}
+  \begin{center}
+    \Large \orange{Let's watch the demo}
+  \end{center}
+\end{frame}
+
+% Concusion and Future work
+\section{Conclusions and Future Work}
+%Conclusions
+\begin{frame}{Conclusions}
+  \begin{itemize}
+  \item Formal verification of {\CDL} mechanism
+  \item Detect deadlock and race cases
+  \item Implement an automated verifier for {\CDL} programs
+  \end{itemize}
+\end{frame}
+
+% Future work
+\begin{frame}{Future work}
+  \begin{itemize}
+  \item Verify fundamental concurrent algorithms: locks, etc.
+  \item Compare with state-of-the-art tools Caper and Starling
+    \item Build on the recent work of ``tree share'' model
+  \item Build on recent logics such as Views, Iris, and LiLi
+  \end{itemize}
+\end{frame}
+
+% Thank you
+\begin{frame}{Thank you for your attention!}
+  \begin{center}
+    \Large \orange{Questions ?}
+  \end{center}
+\end{frame}
+
+\end{document}

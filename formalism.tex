@@ -1,0 +1,230 @@
+\section{Formalism}
+% Core language
+\begin{frame}{Core Language}
+  \begin{center}
+  \begin{small}
+  $
+  \begin{array}{cll}
+    \nonterm{Prog} & ::= & \overbar{\nonterm{data}} ~~ \overbar{\code{proc}}\\
+    \code{datat} & ::= & {\bf data} ~ \code{C} ~\{\overline{t~ ~ f}  \} \\
+    \code{proc} & ::= & t ~~ pn(\overline{t ~~ v}) ~~\overline{spec}\{~e~\} \\
+    \code{spec} & ::= & \code{requires} ~~ \Phi_{pr} ~~ \code{ensure} ~~
+    \Phi{po} ; \\
+    \code{t} & ::= & \code{void} ~|~ \code{int} ~|~ \code{bool} ~|~ \code{\CDL}
+    ~|~ \code{C} \\
+    \code{e} & ::= & \code{v} ~|~ \code{v.f} ~|~ \code{k} ~|~
+    \code{new~C($\overline{v}$)} ~|~ \code{$e_1$;$e_2$} ~|~ \code{$e_1$||$e_2$} ~|~
+    \code{<e>}  \\
+    ~ & ~ & \code{{\bf create\_latch}(n)} ~~ {\bf with} ~ \kappa \land \pi ~|~
+         {\bf coutnDown}(n) \\
+    ~ & ~ & \code{\bf await}(v) ~|~ pn(\overline{v}) ~|~ \code{if}~ v \code{
+           then } e_1 \code{ else } e_2 ~|~ ...
+  \end{array}
+  $
+  \end{small}
+  \end{center}
+\end{frame}
+
+\begin{frame}[shrink=8]{Core Language Example}
+  \begin{center}
+    \begin{small}
+  $
+  \begin{array}{l}
+    \code{data CDL\{\}} \\ 
+    \code{data cell\{int val;\}} \\
+    \code{pred\_prim LatchIn\{-\%P@Split \}<> } \\
+    \code{pred\_prim LatchOut\{+\%P@Split \}<> } \\
+    \code{pred\_prim CNT<n:int>} \\
+    \code{\ \ inv n >= (-1) }\\
+    \vspace{-3mm}\\
+    \code{lemma "split" self::CNT<n> \& a>=0 \& b>=0 \& n=a+b} \\
+    \code{\ \ \ \  -> self::CNT<a> * self::CNT<b>; } \\
+    \code{// Normalization lemmas} \\
+    \code{lemma\_prop "idemp-CNT" self::CNT<a> * self::CNT<(-1)>}\\
+    \code{\ \ \ \ -> self::CNT<(-1)>; } \\
+    \code{lemma\_prop "combine-CNT" self::CNT<a> * self::CNT<b> \& a,b>=0} \\
+    \code{\ \ \ \ ->  self::CNT<a+b>; }\\
+    %% \code{CDL create\_latch(int n) with \%P } \\
+    %% \SPEC{\ \ \ \requires~\code{n>0}} \\
+    %% \SPEC{\ \ \ \ensures~\code{res::LatchIn{-\%P}<> * res::LatchOut{+\%P}<> *
+    %%   res::CNT<n>; }} \\ 
+    %% \SPEC{\ \ \ \requires~\code{n=0} } \\
+    %% \SPEC{\ \ \ \ensures~\code{res::CNT<(-1)>;} }\\ 
+    %% \vspace{-3mm} \\
+    %% \code{void countDown(CDL c)} \\
+    %% \SPEC{\ \ \ \requires~\code{c::LatchIn{-\%P}<> * \%P * c::CNT<n> \& n>0 } }\\
+    %% \SPEC{\ \ \ \ensures~\code{c::CNT<n-1>;}  }\\
+    %% \SPEC{\ \ \ \requires~\code{c::CNT<(-1)> }  }\\
+    %% \SPEC{\ \ \ \ensures~\code{c::CNT<(-1)>; }  }\\
+    %% \vspace{-3mm}\\
+    %% \code{void await(CDL c)}\\
+    %% \SPEC{\ \ \ \requires~\code{c::LatchOut{+\%P}<> * c::CNT<0> } }\\
+    %% \SPEC{\ \ \ \ensures~\code{c::CNT<(-1)> * \%P; } }\\
+    %% \SPEC{\ \ \ \requires~\code{c::CNT<(-1)> } }\\
+    %% \SPEC{\ \ \ \ensures~\code{c::CNT<(-1)>; } }\\
+    %% \vspace{-3mm} \\
+    %% \code{void main() } \\
+    %% \SPEC{\ \ \ \requires~~\code{emp}~~~\ensures~~\code{emp;} } \\
+    %% \code{\{}\\
+    %% \code{\ \ cell h, r; } \\
+    %% \code{\ \ int v; }\\
+    %% \code{\ \ CDL c = create\_latch(2) with h'::cell<1> * r'::cell<2> * @full[h,
+    %%     r]; }\\
+    %% \code{\ \ par {h, r, v, c@L} }\\
+    %% \code{\ \ \{}\\
+    %% \code{\ \ \ \ case {h, c@L} c'::LatchIn{- h'::cell<1> * @full[h]}<> *
+    %%   c'::CNT<(1)> -> } \\
+    %% \code{\ \ \ \ \ \ h = new cell(1);} \\
+    %% \code{\ \ \ \ \ \ countDown(c);} \\
+    %% \code{||}\\
+    %% \code{\ \ \ \ case {r, c@L} c'::LatchIn{- r'::cell<2> * @full[r]}<> *
+    %%   c'::CNT<(1)> ->} \\
+    %% \code{\ \ \ \ \ \ r = new cell(2);} \\
+    %% \code{\ \ \ \ \ \ countDown(c); } \\
+    %% \code{|| } \\
+    %% \code{\ \ \ \ case {v, c@L} c'::LatchOut{+ h'::cell<1> * r'::cell<2> *
+    %%     @full[h, r]}<> * c'::CNT<0> -> } \\ 
+    %% \code{\ \ \ \ \ \ await(c); } \\
+    %% \code{\ \ \ \ \ \ v = h.val + r.val;} \\
+    %% \code{\ \ \}} \\
+    %% \code{\ \ assert h'::cell<1> * r'::cell<2> \& v' = 3;} \\
+    %% \code{\}}
+  \end{array}
+  $
+  \end{small}
+\end{center}
+\end{frame}
+
+\begin{frame}[shrink=25]{Core Language Example}
+  \begin{center}
+    \begin{small}
+  $
+  \begin{array}{l}
+    %% \code{CDL create\_latch(int n) with \%P } \\
+    %% \SPEC{\ \ \ \requires~\code{n>0}} \\
+    %% \SPEC{\ \ \ \ensures~\code{res::LatchIn{-\%P}<> * res::LatchOut{+\%P}<> *
+    %%   res::CNT<n>; }} \\ 
+    %% \SPEC{\ \ \ \requires~\code{n=0} } \\
+    %% \SPEC{\ \ \ \ensures~\code{res::CNT<(-1)>;} }\\ 
+    %% \vspace{-3mm} \\
+    %% \code{void countDown(CDL c)} \\
+    %% \SPEC{\ \ \ \requires~\code{c::LatchIn{-\%P}<> * \%P * c::CNT<n> \& n>0 } }\\
+    %% \SPEC{\ \ \ \ensures~\code{c::CNT<n-1>;}  }\\
+    %% \SPEC{\ \ \ \requires~\code{c::CNT<(-1)> }  }\\
+    %% \SPEC{\ \ \ \ensures~\code{c::CNT<(-1)>; }  }\\
+    %% \vspace{-3mm}\\
+    %% \code{void await(CDL c)}\\
+    %% \SPEC{\ \ \ \requires~\code{c::LatchOut{+\%P}<> * c::CNT<0> } }\\
+    %% \SPEC{\ \ \ \ensures~\code{c::CNT<(-1)> * \%P; } }\\
+    %% \SPEC{\ \ \ \requires~\code{c::CNT<(-1)> } }\\
+    %% \SPEC{\ \ \ \ensures~\code{c::CNT<(-1)>; } }\\
+    %% \vspace{-3mm} \\
+    \code{void main() } \\
+    \SPEC{\ \ \ \requires~~\code{emp}~~~\ensures~~\code{emp;} } \\
+    \code{\{}\\
+    \code{\ \ cell h, r; } \\
+    \code{\ \ int v; }\\
+    \code{\ \ CDL c = create\_latch(2) with h'::cell<1> * r'::cell<2> * @full[h,
+        r]; }\\
+    \code{\ \ par {h, r, v, c@L} }\\
+    \code{\ \ \{}\\
+    \code{\ \ \ \ case {h, c@L} c'::LatchIn{- h'::cell<1> * @full[h]}<> *
+      c'::CNT<(1)> -> } \\
+    \code{\ \ \ \ \ \ h = new cell(1);} \\
+    \code{\ \ \ \ \ \ countDown(c);} \\
+    \code{||}\\
+    \code{\ \ \ \ case {r, c@L} c'::LatchIn{- r'::cell<2> * @full[r]}<> *
+      c'::CNT<(1)> ->} \\
+    \code{\ \ \ \ \ \ r = new cell(2);} \\
+    \code{\ \ \ \ \ \ countDown(c); } \\
+    \code{|| } \\
+    \code{\ \ \ \ case {v, c@L} c'::LatchOut{+ h'::cell<1> * r'::cell<2> *
+        @full[h, r]}<> * c'::CNT<0> -> } \\ 
+    \code{\ \ \ \ \ \ await(c); } \\
+    \code{\ \ \ \ \ \ v = h.val + r.val;} \\
+    \code{\ \ \}} \\
+    \code{\ \ assert h'::cell<1> * r'::cell<2> \& v' = 3;} \\
+    \code{\}}
+  \end{array}
+  $
+  \end{small}
+\end{center}
+\end{frame}
+
+\begin{frame}{Core Specification Language}
+  \begin{small}
+  \begin{center}
+  \[
+  \begin{array}{rrll}
+    \!\!\!\!\textsf{FA~Pred.} & \nonterm{rpred} & {::=} &
+    \code{pred}~~\btt{R}(\self,\overbar{\rsrvar},\vlist{v})  
+~[\veq~\constr]~[\lit{inv}~\pure]\\
+
+\!\!\!\!\textsf{Action} & \nonterm{act} & {::=} &
+\code{action}~\code{I}~\veq~ 
+~\overbar{\aheap_1{\wedge}{\pure_1} \rightsquigarrow \aheap_2{\wedge}{\pure_2}
+} \\
+
+\!\!\!\!\textsf{Disj.~formula} & \constr & {::=} & \bigvee ( \exists \vlist{v} \cdot
+ {\bheap}{\sep}
+ \heap {\wedge} \pure) \\
+
+ \!\!\!\!\textsf{Non-Resource}
+& \!\! \bheap & {::=} & {[\code{I}]_{\grammarPerm}} \mid
+ \code{WAIT}({\overbar{v_1{\ra}v_2}})\addperm{}{\grammarPerm} \mid 
+\GLOBAL{\code{v}}{\code{C}(\vlist{v})} 
+%\\
+%&&&
+\mid \bheap_1 {\sep} \bheap_2
+\\
+ 
+%\textsf{Heap formula} 
+\!\!\!\!\textsf{Sep.~formula} & \heap & {::=} & %\emp \mid 
+\aheap
+%% \mid \term{S}(\overbar{\code{v}}) 
+\mid 
+\hidefa{[\sm{\OM}]\,}\rsrvar
+\mid \rnpredl{\btt{R}}{\vlist{v}}{\code{v},\overbar{\fconstr},\vlist{v}}
+\mid  \heap_1 \sep \heap_2 \\
+
+\!\!\!\!\textsf{Simple~heap}
+& \!\! \aheap & {::=} &
+\emp
+\mid \permsto{\code{v}}{\code{C}(\vlist{v})}{}%% \addperm{}{\fracpermc}
+\mid \LOCAL{\code{v}}{\code{C}(\vlist{v})}
+\mid \aheap_1 \sep \aheap_2 
+\\
+\!\!\!\!\textsf{Perms}
+& {\grammarPerm}
+& {::=} & \fracperm \mid 1 \\
+\!\!\!\!\textsf{Pure~formula}
+& \pure & {::=} & \arith \mid \pure_1
+{\wedge} \pure_2 \mid \pure_1 {\vee} \pure_2 \mid {\neg} \pure
+\mid {\exists} \code{v} {\cdot} \pure \mid {\forall} \code{v} {\cdot} \pure\\
+\!\!\!\!\textsf{Arith.~formula}
+& \arith & {::=} & \aterm_1 {=} \aterm_2 \mid \aterm_1 {\neq} \aterm_2 \mid 
+			\aterm_1 {<} \aterm_2 \mid \aterm_1 {\leq} \aterm_2  \\
+\!\!\!\!\textsf{Arith.~term} 
+& \aterm & {::=} & \code{k} \mid \code{v} \mid \code{k} \times \aterm \mid
+\aterm_1 + \aterm_2 \mid -\aterm  
+  \end{array}
+\]
+  \end{center}
+  \end{small}
+  \[
+\begin{array}{lll}
+%% \myit{Frac.~ perm.~ var.}~\fracperm \in \lit{(} 0 \lit{,} 1
+%% \lit{]}	 & \code{v} \in \myit{Variables} \\
+\!\!\! k ~{\in}~ \myit{integer~constants} &%\!\!\!\!\!\!
+\code{v} ~{\in}~ \myit{variables} , \vlist{v} \veq \code{v}_1,..,\code{v}_n
+& %\!\!
+~~\code{C} ~{\in}~ \myit{data~names}  %% \myit{S} \in \myit{shape~pred.~names}
+\\
+\!\!\! \rsrvar ~ {\in}~ \myit{resource~variables~} & 
+\btt{R}~{\in}~ \myit{resource~pred.~names}  & \sm{\fracperm}\in (0,1]%\\
+
+
+\end{array}
+\]
+
+\end{frame}

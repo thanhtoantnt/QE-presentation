@@ -1,0 +1,683 @@
+%\usepackage{times,epsfig,color,latexsym,clrscode3e}
+\usepackage{amsmath,amssymb,bm,mathtools}
+
+\usepackage{relsize} %to make math symbols bigger/smaller
+
+\usepackage{multicol}
+
+\usepackage{frameit,color,latexsym,graphics,wrapfig}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{lineno}
+\newcommand{\cc}[1]{{\small$\ensuremath{\tt #1}$}} %small size
+
+\newcommand{\addperm}[2]{{#1}\mbox{$_{#2}$}}
+%\usepackage{lgrind,proof}
+%\usepackage{lineno}
+%\usepackage{listings}
+%\usepackage{multirow}
+%\usepackage{amssymb}
+\usepackage{graphicx}
+
+\usepackage{xspace}
+
+\usepackage{framed,color} %% for shaded
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,positioning,arrows,calc,fit}
+
+%% \usepackage{amsthm}
+
+%\usepackage{hanging} %% for hangparas
+
+\newcommand{\ptto}[3]{\ensuremath{{\btt{#1}}\,{\mapsto}\,{\btt{#2}}{\langle}{\btt{#3}}{\rangle}}}
+
+%first-order logic predicates
+\newcommand{\fopred}[2]{\ensuremath{{\btt{#1}}{({#2})}}}
+\newcommand{\pred}[2]{\ensuremath{{\btt{#1}}{\langle}{#2}{\rangle}}}
+
+\newcommand{\rpreds}[2]{\ensuremath{\btt{#1}({#2})}}
+\newcommand{\rpredl}[3]{\ensuremath{\btt{#1}[{#2}]({#3})}} %% resource predicates: name[w*](v,P*,v*)
+\newcommand{\rnpredl}[3]{\ensuremath{\btt{#1}({#3})}} %% resource predicates: name[w*](v,P*,v*)
+
+%%%flow-aware predicate (Thrd and Thrd2)
+
+\newcommand{\mymodel}{\models}
+\def\Flds{\myit{Fields}}
+\def\Store{\myit{Heaps}}
+\def\Stack{\myit{Stacks}}
+\def\Locations{\myit{Loc}}
+\def\Val{\myit{Val}}
+\def\Var{\myit{Var}}
+\newcommand{\mo}[3]{#1,#2 \mymodel #3}
+\newcommand{\notmo}[3]{#1,#2 \not\mymodel #3}
+\newcommand{\mos}[1]{\ensuremath{\mo{s}{h}{#1}}}
+\newcommand{\mosp}[1]{\ensuremath{{s}\mymodel{#1}}}
+\def\iffs{\mbox{\tt iff~}}
+\def\dom{\myit{dom}}
+%% \def\loc{\iota}
+\newcommand{\s}[1]{[\![#1]\!]s}
+\def\inv{\myit{inv}}
+\def\getP{\myit{getProperty}}
+%% \newcommand{\view[2]{\ensuremath{#1{\langle}{#2}{\rangle}}}
+\newcommand{\menv}[2]{\frac{\begin{array}{c}#1\end{array}}{#2}}
+\def\fresh{\myit{fresh}}
+\def\length{\myit{length}}
+
+\newcommand{\mysf}[1]{\textsf{\bf\small #1}}
+\newcommand{\Top}{\mbox{$\top$}}
+\newcommand{\presize}{\phi_{\myit{pr}}}
+\newcommand{\postsize}{\phi_{\myit{po}}}
+\newcommand{\sizev}{{\cal V}}
+%% \newcommand{\pure}{\ensuremath{\pi}}
+\newcommand{\sarg}[1]{{\la}#1{\ra}}
+%% \def\la{\langle}
+%% \def\ra{\rangle}
+\def\bag{B}
+\def\bagconstr{\varphi}
+\def\invmap{\myit{Inv}}
+\newcommand{\report}[1]{#1}
+\newcommand{\hmodels}[2]{\ensuremath{#1\,{\models}\,#2}}
+
+\newtheorem{defn}{Definition}[section] %hiden when use elsart
+
+%with small env (not working well under math
+\newcommand{\thrdone}[5]{\begin{small}\ensuremath{\btt{ThrdInit}(\btt{#2},{\OM}{\btt{#3}},{\OP}{\btt{#4}})}\end{small}}
+\newcommand{\thrdpredone}[5]{\begin{small}\ensuremath{\btt{ThrdInit[#1]}(\btt{#2},{\OM}{\btt{#3}},{\OP}{\btt{#4}},\btt{#5})}\end{small}}
+\newcommand{\thrdpredtwo}[2]{\begin{small}\ensuremath{\btt{ThrdLive}(\btt{#1},{\OP}{\btt{#2}})}\end{small}}
+
+%normal version without small
+%\newcommand{\thrdpredone}[5]{\ensuremath{\btt{Thrd[#1]}(\btt{#2},{\OM}{\btt{#3}},{\OP}{\btt{#4}},\btt{#5})}}
+
+%\newcommand{\thrdpredtwo}[2]{\ensuremath{\btt{Thrd2}(\btt{#1},{\OP}{\btt{#2}})}}
+
+\newcommand{\vlist}[1]{\ensuremath{\bar{\code{#1}}}}
+\newcommand{\RS}{\ensuremath{\code{RS}}}
+
+%%CountDownLatc. 
+
+\newcommand{\CNT}[2]{\ensuremath{\code{CNT}(\code{#1},\code{#2})}}
+%% \newcommand{\LatchIn}[2]{\ensuremath{\code{Latch}(\code{#1},{\OM}\code{#2})}}
+%% \newcommand{\LatchOut}[2]{\ensuremath{\code{Latch}(\code{#1},{\OP}\code{#2})}}
+\newcommand{\LatchIn}[2]{\ensuremath{\code{LatchIn}(\code{#1},\code{#2})}}
+\newcommand{\LatchOut}[2]{\ensuremath{\code{LatchOut}(\code{#1},\code{#2})}}
+\newcommand{\Latch}[3]{\ensuremath{\code{Latch}(\code{#1},{#2}\code{#3})}}
+%% \newcommand{\hideflowaware}[1]{}
+\newcommand{\hidefa}[1]{}
+
+\newcommand{\DEC}{\ensuremath{\code{DEC}}}
+\newcommand{\KILLR}{\ensuremath{\code{KILL}}}
+\newcommand{\createlatchS}{\ensuremath{\code{create\_latch}}}
+%\newcommand{\CDL}{\ensuremath{\code{\sm{counDownLatch}}}}
+
+%\newcommand{\predf}[3]{\ensuremath{{\btt{#1}}
+%( {\btt{#3}} )
+%{\langle}{\btt{#2}}{\rangle}}}
+
+\newcommand{\predf}[3]{\ensuremath{{#1}( {#3} ){\langle}{#2}{\rangle}}}
+\newcommand{\predfI}[4]{\ensuremath{{#1}( {#3} ){\langle}{#2}{\rangle}@{#4}}}
+
+%optional fractional permission
+\newcommand{\predfo}[3]{\ensuremath{{#1}{[(#3)]}{\langle}{#2}{\rangle}}}
+%\newcommand{\view}[2]{\ensuremath{\btt{#1}{\langle}{#2}{\rangle}}} % view=pred
+%% \newcommand{\view}[2]{\pred{#1}{#2}}
+\newcommand{\viewf}[3]{\pred{#1}{#2}{#3}}
+
+\newcommand{\predt}{\ensuremath{\epsilon}}
+
+%% \newcommand{\nil}{\btt{null}}
+
+\def\sep{\code{*}}
+\newcommand{\septract}{\ensuremath{\code{-\!-\!}\circledast}}
+\def\wand{~\code{-\!-\!*}~}
+\newcommand{\usep}[1]{\ensuremath{~\code{*}_{\{#1\}}~}} % compose and update
+
+\newcommand{\codes}[1]{{{\scriptsize {\ensuremath{\tt #1}}}}} %small size
+%\newcommand{\code}[1]{{{\ensuremath{\tt #1}}}}
+\newcommand{\sm}[1]{\mbox{$#1$}}
+\newcommand{\btt}[1]{{\ensuremath{\tt #1}}}
+\newcommand{\emp}{\btt{emp}}
+\newcommand{\failure}{\btt{FAIL}}
+%\newcommand{\true}{\btt{true}}
+\newcommand{\emps}{\btt{emp_s}}
+\newcommand{\empt}{\btt{emp_t}}
+\newcommand{\hoares}[1]{{{\scriptsize{\ensuremath{\textit {#1}}}}}} %small size
+\newcommand{\hoare}[1]{{\ensuremath{\textit #1}}}
+%\newcommand{\hoare2}[1]{{\scriptsize{\ensuremath{\textit #1}}}
+%\newcommand{\hoare}[1]{}
+
+\newcommand\nonterm[1]{\textit{#1}}
+\newcommand\term[1]{\textit{#1}}
+%\newcommand\term[1]{\code{#1}}
+\newcommand\lit[1]{{\bf #1}}
+
+\newcommand{\constr}{\ensuremath{\Phi}}
+
+\def\pre{\constr_{\myit{pr}}}
+\def\post{\constr_{\myit{po}}}
+
+\newcommand{\requires}{\ensuremath{{\code{requires}}}}
+\newcommand{\ensures}{\ensuremath{{\code{ensures}}}}
+\newcommand{\res}{\ensuremath{\code{res}}}
+
+\def\D{\Delta}
+
+\newcommand{\myit}[1]{\textit{#1}}
+\def\map{\myit{X{\!}Pure}}
+\def\invmap{\myit{Inv}}
+
+\def\ex{{\bf ex}}
+
+\def\fresh{\myit{fresh}}
+\def\unfold{\myit{unfold}}
+
+\newcommand\V[1]{\ensuremath{\overrightarrow{#1}}}
+
+%\newcommand{\self}{\btt{root}}
+\newcommand{\self}{\btt{self}}
+\newcommand{\veq}{\ensuremath{\equiv}}
+\newcommand{\pure}{\ensuremath{\pi}}
+\newcommand{\heap}{\ensuremath{\kappa}}
+\newcommand{\ptr}{\ensuremath{\gamma}}
+%\newcommand{\pconstr}{\ensuremath{\phi}} 
+\newcommand{\pconstr}{\ensuremath{\pi}} 
+\newcommand{\vperm}{\ensuremath{\nu}} 
+
+\newcommand{\invf}[1]{\ensuremath{{1.0 {\geq} {#1} {>} 0.0}}}
+
+\newcommand{\aheap}{\ensuremath{\iota}} % atomic heap
+\newcommand{\bheap}{\ensuremath{\eta}} % atomic heap
+\newcommand{\arith}{\ensuremath{\alpha}}
+\newcommand{\mset}{\ensuremath{\beta}}
+\newcommand{\aterm}{\ensuremath{\alpha^t}}
+\newcommand{\mterm}{\ensuremath{\beta^t}}
+
+\newcommand{\mustset}{\ensuremath{M{\!}U{\!}S{\!}T}}
+\newcommand{\mayset}{\ensuremath{M{\!}A{\!}Y}}
+\newcommand{\empset}{\ensuremath{\{\}}}
+%% \newcommand{\set}[1]{\ensuremath{\{{#1}\}}}
+
+
+
+\newcommand{\own}[1]{\hoare{Own(\ensuremath{#1})}}% own(v,f)
+
+%\newcommand{\fracperm}{\ensuremath{\pi}}
+\newcommand{\fracpermc}{\btt{\epsilon}} %% 0<fracperm<=1
+\newcommand{\fracperm}{\btt{\epsilon}} %% 0<fracperm<=1
+\newcommand{\grammarPerm}{\btt{\xi}} %% fracperm | 1
+%% \newcommand{\permX}{\btt{\xi}} %% 0<fracperm<=1
+\newcommand{\baseperm}{\btt{\beta}}
+%\newcommand{\partperm}{\ensuremath{\boldsymbol{\varepsilon}}}
+\newcommand{\partperm}{\ensuremath{\mathlarger{\mathlarger{\mathlarger{\varepsilon}}}}}
+\newcommand{\permset}{\ensuremath{\Pi}}
+\newcommand{\permsetemp}{\empset}
+%\newcommand{\perm}[1]{\ensuremath{\pi(#1)}}
+\newcommand{\perm}[1]{\ensuremath{(#1)}}
+
+\newcommand{\entailS}[2]{\ensuremath{#1 \vdash #2}}
+\newcommand{\entailH}[3]{\ensuremath{#1 \vdash #2 \rewrite #3}}
+
+\newcommand{\entailW}[3]{\ensuremath{#1 \vdash_\omega #2 \Rightarrow  #3}}
+\newcommand{\entail}[3]{\ensuremath{#1 \vdash #2 \Rightarrow  #3}}
+\newcommand{\entailK}[5]{\ensuremath{#3 \vdash^{#1}_{#2}#4 \rewrite #5}}
+\newcommand{\entailC}[4]{\ensuremath{#2 \vdash_{#1} #3 \rewrite #4}}
+\newcommand{\entailCV}[3]{\entailC{\myit{E}}{#1}{#2}{#3}}
+\newcommand{\entailVV}[3]{\entailk{\heap}{E}{#1}{#2}{#3}}
+\newcommand{\entailHO}[3]{\entailK{}{\btt{f}}{#1}{#2}{#3}}
+\newcommand{\entailAnyHO}[3]{\entailK{}{\btt{\fann}}{#1}{#2}{#3}}
+\newcommand{\entailAnyVHO}[4]{\entailK{\fann}{#4}{#1}{#2}{#3}}
+\newcommand{\entailInHO}[3]{\entailK{}{\btt{\inflow}}{#1}{#2}{#3}}
+\newcommand{\entailInVHO}[4]{\entailK{\inflow}{#4}{#1}{#2}{#3}}
+\newcommand{\entailOutHO}[3]{\entailK{}{\btt{\outflow}}{#1}{#2}{#3}}
+\newcommand{\entailOutVHO}[4]{\entailK{\outflow}{#4}{#1}{#2}{#3}}
+
+\newcommand{\hc}[2]{\ensuremath{{#1}{::}#2}}
+%\newcommand{\defs}{\stackrel{\text{\ensuremath{\Delta}}}{=}}
+%% \newcommand{\defs}{\stackrel{\text{\ensuremath{\texttt{def}}}}{=}}
+\newcommand{\defstwo}{\stackrel{\text{\ensuremath{\texttt{def}}}}{\iff}}
+
+
+\newcommand{\hform}[3]{\ensuremath{{{#1}}{::}{{#2}}{\langle}{{#3}}{\rangle}}}
+\newcommand{\hformf}[4]{\ensuremath{{{#1}}{::}{{#2}}{{(#4)}}{\langle}{{#3}}{\rangle}}}
+
+\newcommand{\rulen}[1]{\ensuremath{{\bf \scriptstyle #1}}}
+\newcommand{\entrulen}[1]{\underline{{\bf \rulen{#1}}}}
+%\newcommand{\entrulen}[1]{}
+\newcommand{\comment}{//~}
+%\newcommand{\comment}{}
+%\textbackslash\textbackslash} % comment operator
+
+\newcommand{\normrulen}[1]{[\underline{{\bf \rulen{NORM-#1}}}]}
+\newcommand{\splitrulen}[1]{[\underline{{\bf \rulen{SPLIT-#1}}}]}
+\newcommand{\deadrulen}[1]{[\underline{{\bf \rulen{DEAD-#1}}}]}
+\newcommand{\releaserulen}[1]{[\underline{{\bf \rulen{REL-#1}}}]}
+\newcommand{\errrulen}[1]{[\underline{{\bf \rulen{ERR-#1}}}]}
+\newcommand{\waitrulen}[1]{[\underline{{\bf \rulen{WAIT-#1}}}]}
+
+\newcommand{\wwith}{{\bf inv}}
+
+\def\foldK{\myit{fold}^{\heap}}
+\newcommand{\foldKI}[1]{\myit{fold}^{#1}}
+
+\newcommand{\foldKII}[2]{\myit{fold}^{#1}_{#2}}
+
+\def\foldL{\myit{foldL}^{\heap}}
+\newcommand{\foldLI}[1]{\myit{foldL}^{#1}}
+
+\def\bagsubsume {\sqsubset}
+\def\bagsupersumeeq {\sqsubseteq}
+\def\bag{{\cal B}}
+\def\BAG{{\cal B}}
+\def\bagunion{\cup}
+\def\bagintersect{\cap}
+%\def\bagunion{\sqcup}
+%\def\bagintersect{\sqcap}
+\def\bagsubsume {\sqsubset}
+\def\bagsubtract{{-}}
+\def\zerobag{\{{\bf 0}\}}
+\newcommand{\compose}[1]{{\circ}_{ \{ {#1} \}}}
+\newcommand{\composeS}[1]{{\circ}_{#1} }
+
+%% \newcommand{\tick}{\ding{51}}
+%% \newcommand{\cross}{\ding{55}}
+
+\newcommand{\fv}[1]{FV({#1})}
+\newcommand{\modifies}[1]{modifies({#1})}
+
+\newcommand{\full}[1]{{@}{\it full}[{#1}]}
+\newcommand{\val}[1]{{@}value[{#1}]}
+\newcommand{\zero}[1]{{@}zero[{#1}]}
+\newcommand{\half}[1]{{@}half[{#1}]}
+\newcommand{\myspace}{\hspace{10pt}}
+\newcommand{\mylspace}{\hspace{5pt}} % less space
+\newcommand{\myvspace}{\hspace{1pt}} %very small space
+\newcommand{\fork}{fork}
+\newcommand{\join}{join}
+\newcommand{\mthreadf}{\ensuremath{\mu}} % main thread
+%% \newcommand{\cthreadf}{\ensuremath{\tau}} % child thread %%not used, to avoid colliion with tid
+\newcommand{\locklevelf}{\ensuremath{\ell}}
+\newcommand{\lockf}{\ensuremath{\ell}}
+\newcommand{\alocklevel}{\ensuremath{\nu}}
+\newcommand{\waitlevelf}{\ensuremath{\omega}}
+\newcommand{\awaitlevel}{\lit{waitlevel}}
+\newcommand{\locksetf}{\ensuremath{\psi}}
+\newcommand{\alockset}{\lit{LS}}
+\newcommand{\levelof}[1]{#1.mu}
+
+\newcommand{\primed}[1]{isPrimed({#1})}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lmm}{Lemma}
+\newtheorem{mydef}{Definition}
+\newtheorem{cor}[thm]{Corollary}
+%\newtheorem*{proof}{Proof}
+%\newtheorem{example}[thm]{Example}
+
+
+
+\def\rewrite{\leadsto}
+\def\vfull{{\it @full}}
+\def\vvalue{{\it @value}}
+\def\vfail{{\it fail}}
+\def\pre{\ensuremath{\constr_{pr}}}
+\def\post{\ensuremath{\constr_{po}}}
+\def\newpre{$\constr'_{pr}$}
+\def\newpost{$\constr'_{po}$}
+\def\vref{V_{ref}}
+\def\vval{V_{val}}
+\def\vmod{V_{m}}
+\def\vfull{V_{full}}
+\def\vpre{V_{pre}}
+\def\vpost{V_{post}}
+
+\newcommand{\verirulen}[1]{[\underline{{\bf \scriptstyle}\rulen{#1}}]}
+\newcommand{\hlr}[3]{\ensuremath{\frac{\begin{array}{c}\verirulen{#1}\\[0.5ex]%[\underline{\rulen{#1}}]\\[0.5ex]
+#2\end{array}}{\begin{array}{c}#3\end{array}}}}
+\newcommand{\hlrs}[2]{\ensuremath{\begin{array}{c}\verirulen {#1} \\ #2\end{array}}}
+\newcommand{\mysplit}[1]{\myit{split}(#1)}
+\def\trans{\ensuremath{\hookrightarrow}}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%>
+%Taken from http://ownership-immutability.googlecode.com/svn-history/r76/trunk/oigj-paper-sources-in-tex/commands.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%>
+
+\newcommand{\typerule}[2]{
+\begin{array}{c}
+  #1 \\
+\hline
+  #2
+\end{array}}
+
+\newcommand{\simplerule}[1]{
+\begin{array}{c}
+  #1
+\end{array}}
+
+% \small \footnotesize \scriptsize \tiny
+% \codesize and \scriptsize seem to do the same thing.
+% \newcommand{\code}[1]{\texttt{\textup{\footnotesize #1}}}
+% \newcommand{\code}[1]{\texttt{\textup{\codesize #1}}}
+\newcommand{\normalcode}[1]{\texttt{\textup{#1}}}
+\def\codesmaller{\small}
+\newcommand{\myCOMMENT}[1]{\COMMENT{\small #1}}
+\newcommand{\code}[1]{\texttt{\textup{\codesmaller #1}}}
+\newcommand{\codeS}[1]{\ensuremath{\texttt{\textup{\codesmaller #1}}}}
+
+\newcommand\mynewcommand[2]{\newcommand{#1}{#2\xspace}}
+\newcommand\blind[2]{#2} %% not blind
+
+\mynewcommand{\hA}{\code{A}} % inVariant definition
+\mynewcommand{\hB}{\code{B}} % inVariant definition
+
+\mynewcommand{\hI}{\code{I}} % iparam
+
+% In the syntax: \hI or ReadOnly or Mutable or Immut
+\mynewcommand{\hJ}{\code{J}}
+\mynewcommand{\hO}{\code{O}}
+\mynewcommand{\ho}{\code{o}}
+
+\mynewcommand{\hX}{\code{X}} % vars
+\mynewcommand{\hY}{\code{Y}} % vars
+%\mynewcommand{\hC}{\code{C}} % class
+%\mynewcommand{\hc}{\code{c}} % cooker
+\mynewcommand{\hL}{\code{L}} % class decl
+\mynewcommand{\hM}{\code{M}} % Method decl
+\mynewcommand{\hN}{\code{N}} % Non-variable type
+%\mynewcommand{\hm}{\code{m}} % method
+\mynewcommand{\he}{\code{e}} % expression
+\mynewcommand{\hv}{\code{v}} % value
+\mynewcommand{\hl}{\code{l}} % location in the store
+\mynewcommand{\lroot}{\code{l}_\top} % root
+\mynewcommand{\lthis}{\code{l}_\smallcode{this}} % this
+\mynewcommand{\hx}{\code{x}} % method parameter
+\mynewcommand{\hf}{\code{f}} % field
+\mynewcommand{\hF}{\code{F}} % types (vars or non vars) of a field
+\mynewcommand{\hT}{\code{T}} % types (vars or non vars)
+\mynewcommand{\hU}{\code{U}} % types (vars or non vars)
+\mynewcommand{\hV}{\code{V}} % closed types
+\mynewcommand{\hH}{\code{H}} % Heap
+\mynewcommand{\hS}{\code{S}}
+\mynewcommand{\hsub}{\code{/}} % substitute (reduction rules)
+\mynewcommand{\hthis}{\code{this}} % this
+\mynewcommand{\hclass}{\code{class}}
+\mynewcommand{\hreturn}{\code{return}}
+\mynewcommand{\hnew}{\code{new}}
+\newcommand{\lt}{\code{<}}%{\mathop{\textrm{\tt <}}}
+\newcommand{\gt}{\code{>}}%{\mathop{\textrm{\tt >}}}
+
+\mynewcommand{\gap}{~ ~ ~ ~ ~ ~}
+
+
+\mynewcommand{\st}{\ensuremath{\mathrel{{\leq}}}} %{\mathop{\textrm{\tt <:}}}
+
+%\newcommand{\RULE}[1]{\textsc{\scriptsize{}#1}} %\RULEhape\scriptsize}
+\newcommand{\RULE}[1]{\entrulen{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<
+
+\newcommand{\var}{v}
+\newcommand{\vars}{V}
+\newcommand{\locs}{L}
+\newcommand{\loc}{l}
+\newcommand{\procs}{P}
+\newcommand{\proc}{p}
+\newcommand{\stores}{M}
+\newcommand{\mem}{\mu}
+\newcommand{\intset}{\mathbb{Z}}
+
+\newcommand{\myhalt}{\code{halt}}
+\newcommand{\myskip}{\code{skip}}
+%\newcommand{\assg}{\code{:=}}
+
+\newcommand{\paren}[3]{\ensuremath{\langle {#1},{#2},{#3} \rangle}}
+\newcommand{\step}{\ensuremath{\rightarrow_g}}
+\newcommand{\stepwo}{\ensuremath{\rightarrow}} %step w/o g
+
+\newcommand{\ptt}{\ensuremath{\mapsto}} %% points-to or maps-to
+\newcommand{\pointer}[1]{\text{ptr(#1)}} %% pointer to #1 
+
+\newcommand{\lpointer}[1]{\text{lptr(\ensuremath{#1})}} %% pointer to a lock #1 
+\newcommand{\lock}{\ensuremath{\phi}}
+\newcommand{\lset}[1]{ \ensuremath{ \{ #1 \} } } %% pointer to a lock #1 
+\newcommand{\lockset}{\ensuremath{\Psi}}
+\newcommand{\locks}{\ensuremath{\psi}}
+\newcommand{\locksetemp}{\{ \}} %% empty lockset
+
+
+\newcommand{\context}{\D}
+\newcommand{\subst}{\sigma}
+
+\newcommand{\tvmap}{\ensuremath{\phi}}
+\newcommand{\Tvmap}{\ensuremath{\Phi}}
+
+%\newcommand{\level}{\ensuremath{\mu}}
+\newcommand{\level}{mu}
+
+\newcommand{\ewedge}{\ensuremath{\#}} % exclusive wedge
+
+\newcommand{\uwedge}[1]{\ensuremath{\wedge_{\{#1\}}}} % compose and update
+
+%\newcommand{\eimply}[1]{\ensuremath{\#{\rightarrow}_{\{#1\}}}} % delayed-checking implification
+
+%% \newcommand{\eimply}[1]{\ensuremath{{\rightarrow}_{\{#1\}}}} % delayed-checking implification
+\newcommand{\eimply}[1]{\ensuremath{{\rightarrow}}} % delayed-checking implification, omit the list of parameters w*
+\newcommand{\ourimply}{\ensuremath{\,\longrightarrow\,}}
+\newcommand{\outline}{\textup{//}}
+
+\newcommand{\dotsaying}[1]{${\cdots}$\textup{\,#1\,}${\cdots}$}
+\newcommand{\dotonly}[1]{${\cdots}$#1}
+\newcommand{\saying}[1]{\#~{\color{red}\textup{\,#1\,}}}
+%% \newcommand{\saying}[1]{{\color{red}\textup{/*\,#1\,*/}}}
+\newcommand{\fperm}[1]{\ensuremath{{\fracperm}_{#1}}}
+\newcommand{\fpermN}{\ensuremath{\fracperm}}
+
+
+\newcommand{\wnsay}[1]{~{{\color{blue}({\bf WN:} \textit{#1}})}}
+%\newcommand{\wnsay}[1]{}
+\newcommand{\wnnay}[1]{}
+\newcommand{\stsay}[1]{~{{\color{green}({\bf Stacey:} \textit{#1}})}}
+%\newcommand{\wnsay}[1]{}
+\newcommand{\stnay}[1]{}
+\newcommand{\dksay}[1]{{{\color{red}{\bf DK:} \textit{#1}}}}
+%\newcommand{\dksay}[1]{}
+\newcommand{\dknay}[1]{}
+\newcommand{\ymsay}[1]{{{\color{green}({\bf YM:} \textit{#1}})}}
+\newcommand{\ymnay}[1]{}
+
+\newcommand{\scsay}[1]{{{\color{green}({\bf SC:} \textit{#1}})}}
+\newcommand{\scnay}[1]{}
+
+\newcommand{\chsay}[1]{{{\color{cyan}({\bf Chanh:} \textit{#1})}}}
+\newcommand{\chnay}[1]{}
+
+
+
+\newcommand{\state}{\ensuremath{\sigma}}
+\newcommand{\fstate}{{\hat \state}}
+
+\newcommand{\config}{\ensuremath{\Psi}}
+
+\newcommand{\envir}{\ensuremath{\Gamma}}
+
+\newcommand{\envirof}[1]{\ensuremath{\envir(#1)}}
+
+\newcommand{\omape}{\ensuremath{\Omega}} %map object references to environment lists
+
+\newcommand{\omapeof}[1]{\ensuremath{\omape(#1)}} %map object references to environment lists
+
+\newcommand{\omapi}{\ensuremath{\kappa}} %map object references to integers
+
+\newcommand{\omaplevel}{\ensuremath{L}} %map object references to integers
+
+\newcommand{\omaplevelof}[1]{\omaplevel(#1)} %map object references to integers
+
+\newcommand{\omapiof}[1]{\ensuremath{\omapi(#1)}} %map object references to integers
+
+\newcommand{\threads}{\ensuremath{T}}
+
+\newcommand{\ls}{\ensuremath{ls}}
+
+\newcommand{\delayedls}{\ensuremath{\kappa}}
+
+\newcommand{\delayedf}{\ensuremath{\gamma}}
+
+\definecolor{Light}{gray}{.90}
+\definecolor{Dark}{gray}{.78}
+
+%\newcommand{\highlightd}[1]{\colorbox{Dark}{$\displaystyle #1$}} %highlight dark
+
+\newcommand{\highlightd}[1]{\boxed{#1}} %highlight dark
+
+\newcommand{\highlightl}[1]{\colorbox{Light}{$\displaystyle #1$}} % highlightr gray
+
+%% \newcommand{\tid}{\ensuremath{\iota}} % child thread
+\newcommand{\tid}{\ensuremath{\tau}} % child thread
+
+\newcommand{\mytick}{\small \tick} 
+\newcommand{\mycross}{\small \cross}
+
+%% #1 points to #2 with permission #3
+\newcommand{\permsto}[3]{{\ensuremath{{#1}\,{\xmapsto{{#3}}{\!{#2}}}}}}
+
+\newcommand{\barriernophase}{ \ensuremath{ \mathsf{ barrier{(}{)} } } }
+
+\newcommand{\barrier}[1]{ \ensuremath{ \mathsf{ barrier{(} } #1 \mathsf{ {)} } } }
+
+\newcommand{\thread}[1]{ \ensuremath{ \mathsf{ thrd{\langle} } #1 \mathsf{ {\rangle} } } }
+
+\newcommand{\dead}[1]{\ensuremath{\code{dead(#1)}}}
+
+\newcommand{\localmap}{\ensuremath{L}} %map barriers to local phases
+
+
+\newcommand{\globalmap}{\ensuremath{G}} %map barriers to numbers of participants and global phases
+\newcommand{\globalmapI}{\ensuremath{G_i}}
+
+\newcommand{\localmapof}[1]{\ensuremath{\localmap(#1)}} 
+
+\newcommand{\globalmapTof}[1]{\ensuremath{\globalmap_t(#1)}} 
+\newcommand{\globalmapPof}[1]{\ensuremath{\globalmap_p(#1)}} 
+\newcommand{\globalmapIof}[1]{\ensuremath{\globalmap_i(#1)}} 
+\newcommand{\globalmapof}[1]{\ensuremath{\globalmap(#1)}}
+ 
+\newcommand{\threadspec}{\ensuremath{\Theta}}
+
+\newcommand{\OM}{\ominus}
+\newcommand{\OD}{\odot}
+\newcommand{\OP}{\oplus}
+\newcommand{\ERR}{\code{ERROR}}
+\newcommand{\RACE}{\code{RACE-ERROR}}
+\newcommand{\DEADLOCK}{\code{DEADLOCK-ERROR}}
+\newcommand{\globalBOX}[1]{\framebox{#1}}
+\newcommand{\PointTo}[2]{{\ensuremath{\code{#1}{\mapsto}\code{#2}}}}
+\newcommand{\GLOBAL}[2]{\framebox{\ensuremath{\code{#1}{\mapsto}\code{#2}}}}
+\newcommand{\GLOBALF}[3]{\GLOBAL{#1}{#2}\ensuremath{{\wedge}{#3}}}
+\newcommand{\PointToF}[3]{\PointTo{#1}{#2}\ensuremath{{\wedge}{#3}}}
+\newcommand{\LOCAL}[2]{\ensuremath{\{\!|\code{#1}{\mapsto}{\code{#2}}|\!\}}}
+\newcommand{\LOCALF}[3]{\LOCAL{#1}{#2}\ensuremath{{\wedge}{#3}}}
+\newcommand{\eqlr}{\ensuremath{\,\Longleftrightarrow\,}}
+%% \newcommand{\WAIT}[1]{\code{WAIT\,(\{\ensuremath{#1}\})}}
+\newcommand{\WAITC}[1]{\code{WAIT\,(\ensuremath{#1})}}
+\newcommand{\WAITK}[1]{\code{WAIT}}
+\newcommand{\LS}[1]{\code{LockSet}(\ensuremath{\tt #1})}
+\newcommand{\LSS}[1]{\code{LockSet}\{\ensuremath{\tt #1}\}}
+\newcommand{\ra}{\ensuremath{\rightarrow}}
+\newcommand{\RLess}{{\em resource-less}}
+\newcommand{\RLoaded}{{\em resource-loaded}}
+\newcommand{\RAmb}{{\em resource-ambiguous}}
+\newcommand{\CDL}{\code{CountDownLatch}}
+\newcommand{\cdl}{countDownLatch}
+\newcommand{\CD}{\code{countDown}}
+\newcommand{\cd}{countDown}
+\newcommand{\await}{\code{await}}
+\newcommand{\LRA}{\sm{\longrightarrow}}
+\newcommand{\SPEC}[1]{{\color{blue}#1}}
+\newcommand{\BSPEC}[1]{#1}
+\newcommand{\CSPEC}[1]{\ensuremath{\code{\small\#~{\color{blue}#1}}}}
+\newcommand{\BCOMMENT}[1]{\ensuremath{\code{\small\#~{#1}}}}
+%% \newcommand{\at}{\ensuremath{\texttt{\small @}}}
+
+\newcommand{\Lock}[2]{\ensuremath{\code{Lock}(\code{#1},{\OP}\code{#2})}}
+\newcommand{\LockRef}[2]{\ensuremath{\code{LockREF}(\code{#1},\code{#2})}}
+%% \newcommand{\LockF}[3]{\ensuremath{\code{Lock}(\code{#1},{\OP}\code{#2})@{{\it#3}}}}
+%% \newcommand{\LockG}[3]{\ensuremath{\code{Lock}(\code{#1},{\OP}\code{#2}@{{\it#3})}}}
+\newcommand{\LockF}[3]{\ensuremath{\code{Lock}(\code{#1},{\OP}\code{#2}){\at}{{\,#3}}}}
+\newcommand{\LockG}[3]{\ensuremath{\code{Lock}(\code{#1},{\OP}\code{#2}{\at}{{\,#3})}}}
+\newcommand{\LockH}[3]{\ensuremath{\code{Lock}(\code{#1},\code{#2}{\at}{{\,#3})}}}
+\newcommand{\Held}[2]{\ensuremath{\code{Held}(\code{#1},{\OM}\code{#2})}}
+\newcommand{\HeldR}[3]{\ensuremath{\code{Held}(\code{#1},{\OM}\code{#2{\at}{#3}})}}
+\newcommand{\HeldE}[2]{\ensuremath{\code{HeldH}(\code{#1},{\OM}\code{#2})}}
+\newcommand{\UnHeld}[1]{\ensuremath{\code{UnHeld}(\code{#1})}}
+\newcommand{\fracN}{\ensuremath{\fracperm_2}}
+
+
+\newcommand{\fconstr}{\ensuremath{\Phi_{\code{f}}}} %%flow-aware formula
+\newcommand{\flow}{\ensuremath{\diamond}} %\bigcirc
+%% \newcommand{\perm}{\ensuremath{?}} %\bigcirc
+\newcommand{\fann}{\ensuremath{\delta}}
+%% \newcommand{\action}{\ensuremath{\code{I}}}
+\newcommand{\actionperm}{\ensuremath{[\action]_{\grammarPerm}}}
+\newcommand{\noflow}{\ensuremath{\odot}}
+\newcommand{\inflow}{\ensuremath{\ominus}}
+\newcommand{\outflow}{\ensuremath{\oplus}}
+\newcommand{\hvardef}{\ensuremath{{\cal D}}}
+\newcommand{\rsrvar}{\btt{V}} %%resource variable
+\newcommand{\lemmaset}{\ensuremath{{\cal L}}} %% set of split/combine lemmas
+
+%%%The following \overbar gives a slightly short line than \overline:%%
+
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+
+\newcommand{\pgraph}{\btt{Graph}} % program wait-for graph
+\newcommand{\pstack}{\btt{Stack}} % program stack
+\newcommand{\pheap}{\btt{Heap}} % program heap
+\newcommand{\platch}{\btt{Latch}} % set of program latches
+\newcommand{\pCDL}{\btt{CDL}} % countdown latch resource
+\newcommand{\pthreads}{\btt{THRDS}} % set of threads
+\newcommand{\tstates}{\btt{TStates}} % thread state
+\newcommand{\tids}{\btt{TIDS}} % program state
+\newcommand{\pspec}{\ensuremath{\phi}} % program state
+
+
+\newcommand{\fpspec}{\ensuremath{{\hat \phi}}} % program state
+\newcommand{\pstate}{\ensuremath{\Sigma}} % program state
+
+\newcommand{\boolset}{\ensuremath{\btt{B}}} % program state
+\newcommand{\fpstate}{{\hat \pstate}} % flow-aware program state
+\newcommand{\fpheap}{{\hat \pheap}} % program heap
+\newcommand{\fpCDL}{{\hat \pCDL}} % countdown latch resource
+\newcommand{\fpthreads}{{\hat \pthreads}} % countdown latch resource
+
+\newcommand{\pvar}{\btt{Var}}  % set of variables
+\newcommand{\pval}{\btt{Val}}  % set of values
+\newcommand{\ploc}{\btt{Loc}}  % set of locations
+
+\newcommand{\denote}[1]{\text{$[\![ $#1$ ]\!]$}}
+\newcommand{\interpret}[1]{\text{$(\!| $#1$ |\!)$}}
+
+%% \newcommand{\mytag}{\ensuremath{\tau}} % timestamp, may collide with thread id
+\newcommand{\mytag}{\ensuremath{\btt{c}}} % timestamp, may collide with thread id
+\newcommand{\mytagset}{\ensuremath{\btt{T}}} % timestamp, may collide with thread id
+\newcommand{\ptagset}{\ensuremath{\mytagset^{\set{\inflow,\outflow}}}} % timestamp, polarized tag set
+\newcommand{\now}{{\bf now}} % timestamp, may collide with thread id
+\newcommand{\semHoare}[1]{\ensuremath{\langle \! \langle #1 \rangle \! \rangle}} % semantics of Hoare triple
+\newcommand{\fault}{\ensuremath{\top}} % fault state
+\newcommand{\cdlR}{\ensuremath{\constr}} % countdown latch resource
+
+\newcommand{\pset}[1]{\ensuremath{\mathcal P \!(#1)}} % powerset
+
+\newcommand{\createthrd}{\ensuremath{\code{create\_thread}}}
+\newcommand{\createlatch}{\ensuremath{\code{create\_latch}}}
+
+\newcommand{\latomsymb}{\ensuremath{\code{\sm{\langle}}}}
+\newcommand{\ratomsymb}{\ensuremath{\code{\sm{\rangle}}}}
+\newcommand{\criticalSec}[1]{{\latomsymb}\,#1{\ratomsymb}}
+
+
+
+
