@@ -20,7 +20,7 @@
 \usetikzlibrary{arrows,positioning,automata} 
 \usepackage{appendixnumberbeamer}
 \newcommand\todo[1]{\textcolor{red}{[#1]}}
-\usepackage{pgfpages}
+%% \usepackage{pgfpages}
 \newcommand*{\Scale}[2][4]{\scalebox{#1}{$#2$}} 
 \usepackage{handoutWithNotes} 
 \mode<handout>
@@ -116,10 +116,10 @@
 			shorten >=2pt,}
 }
 
-\setbeamertemplate{footline}[text line]{%
-	\hspace{49.5em} \tiny
-	\centering \raggedleft\insertframenumber/ \inserttotalframenumber
-}
+%% \setbeamertemplate{footline}[text line]{%
+%% 	\hspace{49.5em} \tiny
+%% 	\centering \raggedleft\insertframenumber/ \inserttotalframenumber
+%% }
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
@@ -186,9 +186,28 @@ Need to prove:
 \item $\{P_1\}~ x := x + 1~ \{Q_1\}$
 \item $\{P_2\}~ x := x + 2 ~\{Q_2\}$
   \pause
-\item $\{P_1 \land P_2\}~ x := x + 2 ~\{P_1\} $ and $\{P_2 \land P_1\} ~x := x + 1 ~\{P_2\} $
-  \item $\{Q_1 \land P_2\}~ x := x + 2 ~\{Q_1\} $ and  $\{Q_2 \land P_1\}~ x := x + 1 ~\{Q_2\} $
+\item Interference freedom: every assertion used in the local verification is
+  shown not invalidated by the execution of the other processes.
+%% \item $\{P_1 \land P_2\}~ x := x + 2 ~\{P_1\} $ and $\{P_2 \land P_1\} ~x := x + 1 ~\{P_2\} $
+%%   \item $\{Q_1 \land P_2\}~ x := x + 2 ~\{Q_1\} $ and  $\{Q_2 \land P_1\}~ x := x + 1 ~\{Q_2\} $
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Interference free}
+  \begin{itemize}
+  \item Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$
+  \item $P_1:  (x = 0 \lor x = 2)$ and $Q_1: (x = 1 \lor x = 3)$
+  \item $P_2: (x = 0 \lor x = 1)$ and $Q_2: (x = 2 \lor x = 3)$
+  \item $\{P_1 \land P_2\}~ x := x + 2 ~\{P_1\} $ and $\{P_2 \land P_1\} ~x := x + 1 ~\{P_2\} $
+  \item $\{Q_1 \land P_2\}~ x := x + 2 ~\{Q_1\} $ and  $\{Q_2 \land P_1\}~ x := x + 1 ~\{Q_2\} $
+    \pause
+  \item   $\{(x = 0 \lor x = 2) \land (x = 0 \lor x = 1)\}~x := x + 2~\{x = 0 \lor x = 2\}$
+  \item   $\{(x = 1 \lor x = 3) \land (x = 0 \lor x = 1)\}~x := x + 2~\{x = 1 \lor x = 3\}$
+  \item   $\{(x = 0 \lor x = 1) \land (x = 0 \lor x = 2)\}~x := x + 1~\{x = 0 \lor x = 1\}$
+  \item   $\{(x = 2 \lor x = 3) \land (x = 0 \lor x = 2)\}~x := x + 1~\{x = 2 \lor x = 3\}$
+    
+\end{itemize}
+
 \end{frame}
 
 %Rely Guarantee
@@ -206,7 +225,12 @@ Need to prove:
 \end{frame}
 
 \begin{frame}{Rely Guarantee Example}
- Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$ \\
+     $$\frac{C_1 \models (p_1, R_1,G_1,q_1)~~~~~~ C_2 \models (p_2, R_2, G_2, q_2)}{C_1~||~C_2 \models (p_1 \land
+    p_2, R_1 \land R_2, G_1 \lor G_2, q_1 \land q_2)}$$
+ 
+  Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$ \\
+  New form: $x := x + 1 ~||~ x := x + 2~~\models (x=0, x' = x, True, x' = 3)$ \\
+ 
     \pause
   \begin{equation}
     \begin{split}
@@ -244,7 +268,7 @@ Need to prove:
 
 \begin{frame}{CSL tree}
   \begin{figure}
-  	\includegraphics[width=20em,height=14em]{./images/CSL-Family-Tree.pdf}
+  	\includegraphics[width=26em,height=20em]{./images/CSL-Family-Tree.pdf}
   \end{figure}
 \end{frame}
   %% \begin{frame}{How to reason about concurrent programs?}
@@ -259,7 +283,8 @@ Need to prove:
 % First example
 \begin{frame}{Automated tools for CSL?}
   \begin{itemize}
-  \item Great successes of sequential separation logic tools, e.g. Infer
+  \item Great successes of sequential separation logic tools, e.g. Infer of
+    Facebook, and SLAyer of Microsoft. 
   \item Only 2 CSL tools appear \textit{this year}, Caper and Starling.
     \pause
   \item Our contributions:
@@ -279,6 +304,9 @@ Need to prove:
 
 % Second example
 \begin{frame}{Motivation Example}
+  \begin{itemize}
+    \item Resources can be split and sent to multiple receiving threads.
+    \end{itemize}
 \begin{center}
 \code{c = \createlatch(1);}
 \[
@@ -294,14 +322,14 @@ Need to prove:
 }
 \]
 \end{center}
-%% \end{frame}
 
-%% %Third example
-%% \begin{frame}{Motivation Example}
-
-\pause
-
-  \begin{center}
+\end{frame}
+%example
+\begin{frame}{Motivation Example}
+  \begin{itemize}
+    \item Model the barrier synchronization.
+    \end{itemize}
+\begin{center}
 \code{c = \createlatch(2);}
 \[
 {
@@ -320,7 +348,6 @@ Need to prove:
 
 \input{CDL}
 
-\input{formalism}
 
 \section{Automated Tool}
 \begin{frame}{Implementation}
@@ -356,5 +383,59 @@ Need to prove:
     \Large \orange{Questions ?}
   \end{center}
 \end{frame}
+\begin{frame}{Interpretations for Abstract Predicates}
+\begin{small}
+$
+\begin{array}{lll}
+\vspace{2mm}
+ \LatchOut{i}{P} & \defs & \GLOBAL{i}{0} {\ourimply} \code{P}
+\\
+ \LatchIn{i}{P} &\defs &  (\code{P}{\septract}\emp) ~{\sep}~ [\DEC]  {\sep}\GLOBAL{i}{m} {\wedge}\code{m>0} 
+ \\
+
+\end{array}
+$
+$
+\begin{array}{l}
+\DEC: \begin{array}[t]{ll}
+\GLOBAL{i}{n}\,{\wedge}\,\code{n{>}0} & \rightsquigarrow \GLOBAL{i}{n{-}1}
+\end{array} \\
+\end{array}\\
+$
+\end{small}
+\pause
+\vspace{2mm}
+\begin{small}
+$
+\LOCAL{i}{n} \longrightarrow \GLOBALF{i}{m}{\code{m}{\geq}\code{n}{\geq}\code{0}}
+$
+\end{small} \\
+\begin{small}
+$
+\LOCAL{i}{n}{\wedge}\code{a,b}{\geq}\code{0}{\wedge}{\code{n=a+b}}
+~{\longleftrightarrow}~ \LOCAL{i}{a}{\sep}\LOCAL{i}{b} 
+$
+\end{small} 
+\begin{small}
+$
+\GLOBAL{i}{a}{\sep}\GLOBAL{i}{b} 
+~{\longleftrightarrow}~\GLOBAL{i}{a}{\wedge}\code{a{=}b}
+$
+\end{small}
+\pause
+\vspace{3mm}
+\begin{small}
+$
+\begin{array}{lll}
+\CNT{i}{n} &\defs & \LOCAL{i}{n} {\wedge}\code{n${\geq}$0}
+~{\vee}~ \GLOBAL{i}{0}{\wedge}\code{n=-1} 
+% CNT(i,n) = {|i->n|}&n>0 \/ [i->0] & n=-1
+\end{array}
+$
+\end{small}
+
+\end{frame}
+
+\input{formalism}
 
 \end{document}
