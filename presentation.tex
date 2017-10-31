@@ -20,7 +20,7 @@
 \usetikzlibrary{arrows,positioning,automata} 
 \usepackage{appendixnumberbeamer}
 \newcommand\todo[1]{\textcolor{red}{[#1]}}
-%% \usepackage{pgfpages}
+\usepackage{pgfpages}
 \newcommand*{\Scale}[2][4]{\scalebox{#1}{$#2$}} 
 \usepackage{handoutWithNotes} 
 \mode<handout>
@@ -116,10 +116,10 @@
 			shorten >=2pt,}
 }
 
-%% \setbeamertemplate{footline}[text line]{%
-%% 	\hspace{49.5em} \tiny
-%% 	\centering \raggedleft\insertframenumber/ \inserttotalframenumber
-%% }
+\setbeamertemplate{footline}[text line]{%
+	\hspace{49.5em} \tiny
+	\centering \raggedleft\insertframenumber/ \inserttotalframenumber
+}
 
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
@@ -132,7 +132,7 @@
   Programs\\ CountDownLatch Mechanism Case Study} 
 \author[Nguyen Thanh Toan]{Student: Nguyen Thanh Toan - A0154686R\newline Supervisor: Assoc. Prof. Chin Wei Ngan}
 \institute[]{National University of Singapore}
-\date{November 3, 2017}
+\date{November 1, 2017}
 
 \newcommand\orange[1]{\textcolor{orange}{\textbf{#1}}}
 \newcommand\reff[1]{[{#1}]}
@@ -168,24 +168,25 @@
 \end{frame}
 
 
-\begin{frame}{Owicki-Gries approach}
-  $$\frac{\{P_1\}~C_1~\{Q_1\}~~~\{P_2\}~C_2~\{Q_2\}}{\{P_1 \land P_2\} C_1~||~C_2~\{Q_1 \land Q_2\}}$$
-  if the proofs $\{P_1\}~C_1~\{Q_1\}$ and $\{P_2\}~C_2~\{Q_2\}$ are {\bf interference free}.
+\begin{frame}{Owicki-Gries Approach}
+  $$\frac{\{P_1\}~C_1~\{Q_1\}~~~\{P_2\}~C_2~\{Q_2\}}{\{P_1 \land P_2\}
+    C_1~||~C_2~\{Q_1 \land Q_2\}}~~~\dagger $$
+  ($\dagger$): if the proofs $\{P_1\}~C_1~\{Q_1\}$ and $\{P_2\}~C_2~\{Q_2\}$ are {\bf interference free}.
   \pause
 
-  Example:
+  %% Example:
   \begin{itemize}
-  \item Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$
-    \pause
-    \item $P_1:  (x = 0 \lor x = 2)$ and $Q_1: (x = 1 \lor x = 3)$
-    \item $P_2: (x = 0 \lor x = 1)$ and $Q_2: (x = 2 \lor x = 3)$
-    \end{itemize}
-\pause
-Need to prove:
-\begin{itemize}
-\item $\{P_1\}~ x := x + 1~ \{Q_1\}$
-\item $\{P_2\}~ x := x + 2 ~\{Q_2\}$
-  \pause
+%%   \item Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$
+%%     \pause
+%%     \item $P_1:  (x = 0 \lor x = 2)$ and $Q_1: (x = 1 \lor x = 3)$
+%%     \item $P_2: (x = 0 \lor x = 1)$ and $Q_2: (x = 2 \lor x = 3)$
+%%     \end{itemize}
+%% \pause
+%% Need to prove:
+%% \begin{itemize}
+%% \item $\{P_1\}~ x := x + 1~ \{Q_1\}$
+%% \item $\{P_2\}~ x := x + 2 ~\{Q_2\}$
+%%   \pause
 \item Interference freedom: every assertion used in the local verification is
   shown not invalidated by the execution of the other processes.
 %% \item $\{P_1 \land P_2\}~ x := x + 2 ~\{P_1\} $ and $\{P_2 \land P_1\} ~x := x + 1 ~\{P_2\} $
@@ -193,19 +194,31 @@ Need to prove:
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Interference free}
+\begin{frame}{Owicki-Gries Approach Example}
+    $$\frac{\{P_1\}~C_1~\{Q_1\}~~~\{P_2\}~C_2~\{Q_2\}}{\{P_1 \land P_2\}
+    C_1~||~C_2~\{Q_1 \land Q_2\}}~~~\dagger $$
+  ($\dagger$): if the proofs $\{P_1\}~C_1~\{Q_1\}$ and $\{P_2\}~C_2~\{Q_2\}$ are {\bf interference free}.
+
   \begin{itemize}
   \item Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$
+  %% \item $P_1:  (x = 0 \lor x = 2)$ and $Q_1: (x = 1 \lor x = 3)$
+  %% \item $P_2: (x = 0 \lor x = 1)$ and $Q_2: (x = 2 \lor x = 3)$
   \item $P_1:  (x = 0 \lor x = 2)$ and $Q_1: (x = 1 \lor x = 3)$
   \item $P_2: (x = 0 \lor x = 1)$ and $Q_2: (x = 2 \lor x = 3)$
+  \end{itemize}
+\pause
+Need to prove:
+\begin{itemize}
+\item $\{P_1\}~ x := x + 1~ \{Q_1\}$
+\item $\{P_2\}~ x := x + 2 ~\{Q_2\}$
+  \pause
   \item $\{P_1 \land P_2\}~ x := x + 2 ~\{P_1\} $ and $\{P_2 \land P_1\} ~x := x + 1 ~\{P_2\} $
   \item $\{Q_1 \land P_2\}~ x := x + 2 ~\{Q_1\} $ and  $\{Q_2 \land P_1\}~ x := x + 1 ~\{Q_2\} $
-    \pause
-  \item   $\{(x = 0 \lor x = 2) \land (x = 0 \lor x = 1)\}~x := x + 2~\{x = 0 \lor x = 2\}$
-  \item   $\{(x = 1 \lor x = 3) \land (x = 0 \lor x = 1)\}~x := x + 2~\{x = 1 \lor x = 3\}$
-  \item   $\{(x = 0 \lor x = 1) \land (x = 0 \lor x = 2)\}~x := x + 1~\{x = 0 \lor x = 1\}$
-  \item   $\{(x = 2 \lor x = 3) \land (x = 0 \lor x = 2)\}~x := x + 1~\{x = 2 \lor x = 3\}$
-    
+  %%   \pause
+  %% \item   $\{(x = 0 \lor x = 2) \land (x = 0 \lor x = 1)\}~x := x + 2~\{x = 0 \lor x = 2\}$
+  %% \item   $\{(x = 1 \lor x = 3) \land (x = 0 \lor x = 1)\}~x := x + 2~\{x = 1 \lor x = 3\}$
+  %% \item   $\{(x = 0 \lor x = 1) \land (x = 0 \lor x = 2)\}~x := x + 1~\{x = 0 \lor x = 1\}$
+  %% \item   $\{(x = 2 \lor x = 3) \land (x = 0 \lor x = 2)\}~x := x + 1~\{x = 2 \lor x = 3\}$
 \end{itemize}
 
 \end{frame}
@@ -221,16 +234,19 @@ Need to prove:
   \end{itemize}
   \pause
   $$\frac{C_1 \models (p_1, R_1,G_1,q_1)~~~~~~ C_2 \models (p_2, R_2, G_2, q_2)}{C_1~||~C_2 \models (p_1 \land
-    p_2, R_1 \land R_2, G_1 \lor G_2, q_1 \land q_2)}$$
+    p_2, R_1 \land R_2, G_1 \lor G_2, q_1 \land q_2)} \dagger$$
+
+  ($\dagger$): The precondition $P_i$ is \text{stable} under rely condition $R_i$.
 \end{frame}
 
 \begin{frame}{Rely Guarantee Example}
-     $$\frac{C_1 \models (p_1, R_1,G_1,q_1)~~~~~~ C_2 \models (p_2, R_2, G_2, q_2)}{C_1~||~C_2 \models (p_1 \land
+     $$\frac{C_1 \models (p_1, R_1,G_1,q_1)~~~~~~ C_2 \models (p_2, R_2, G_2,
+    q_2)}{C_1~||~C_2 \models (p_1 \land 
     p_2, R_1 \land R_2, G_1 \lor G_2, q_1 \land q_2)}$$
  
   Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$ \\
-  New form: $x := x + 1 ~||~ x := x + 2~~\models (x=0, x' = x, True, x' = 3)$ \\
- 
+  New form: $x := x + 1 ~||~ x := x + 2~~\models (x=0, x' = x, True, x' = 3)$
+  with \textbf{True} denotes the action that changes the state arbitrarily. 
     \pause
   \begin{equation}
     \begin{split}
@@ -256,7 +272,7 @@ Need to prove:
 
 \begin{frame}{Concurrent Separation Logic - CSL}
   \begin{itemize}
-  \item Interfence-free concurrency
+  \item Interference-free concurrency
     $$\frac{\{P_1\}~C_1~\{Q_1\}~~~\{P_2\}~C_2~\{Q_2\}}{\{P_1 \ast P_2\}~C_1~||~C_2 ~\{Q_1 \ast Q_2
     \}}$$
     \pause
@@ -290,8 +306,8 @@ Need to prove:
   \item Our contributions:
     \begin{itemize}
     \item The first formal verification for {\CDL} by using abstract predicates.
-    \item A modular solution to the counter mechanism by combining a
-      \textit{thread-local} abstraction and the \textit{global} view.
+    %% \item A modular solution to the counter mechanism by combining a
+    %%   \textit{thread-local} abstraction and the \textit{global} view.
     \item Ensure race-freedom and deadlock-freedom.
     \item An automated prototype which can verify a library implemenation of {\CDL}.
     \end{itemize}
@@ -370,10 +386,11 @@ Need to prove:
 % Future work
 \begin{frame}{Future work}
   \begin{itemize}
-  \item Verify fundamental concurrent algorithms: locks, etc.
-  \item Compare with state-of-the-art tools Caper and Starling
-    \item Build on the recent work of ``tree share'' model
+  \item Verify fundamental concurrent algorithms: spin lock, ticket lock, CAS, etc.
   \item Build on recent logics such as Views, Iris, and LiLi
+  \item Compare with state-of-the-art tools Caper and Starling
+    \pause
+  \item Build on the recent work of ``tree share'' model
   \end{itemize}
 \end{frame}
 
@@ -383,6 +400,25 @@ Need to prove:
     \Large \orange{Questions ?}
   \end{center}
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Back up slides
+\begin{frame}{Interference free}
+  \begin{itemize}
+  \item Program: $\{x = 0\}~ x := x + 1 ~||~ x := x + 2 ~\{x = 3\}$
+  \item $P_1:  (x = 0 \lor x = 2)$ and $Q_1: (x = 1 \lor x = 3)$
+  \item $P_2: (x = 0 \lor x = 1)$ and $Q_2: (x = 2 \lor x = 3)$
+  \item $\{P_1 \land P_2\}~ x := x + 2 ~\{P_1\} $ and $\{P_2 \land P_1\} ~x := x + 1 ~\{P_2\} $
+  \item $\{Q_1 \land P_2\}~ x := x + 2 ~\{Q_1\} $ and  $\{Q_2 \land P_1\}~ x := x + 1 ~\{Q_2\} $
+    \pause
+  \item   $\{(x = 0 \lor x = 2) \land (x = 0 \lor x = 1)\}~x := x + 2~\{x = 0 \lor x = 2\}$
+  \item   $\{(x = 1 \lor x = 3) \land (x = 0 \lor x = 1)\}~x := x + 2~\{x = 1 \lor x = 3\}$
+  \item   $\{(x = 0 \lor x = 1) \land (x = 0 \lor x = 2)\}~x := x + 1~\{x = 0 \lor x = 1\}$
+  \item   $\{(x = 2 \lor x = 3) \land (x = 0 \lor x = 2)\}~x := x + 1~\{x = 2 \lor x = 3\}$
+    
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Interpretations for Abstract Predicates}
 \begin{small}
 $
